@@ -1,45 +1,46 @@
-<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>130</x><y>230</y><w>100</w><h>140</h></coordinates><panel_attributes>Room
+<diagram program="umletino" version="15.1"><zoom_level>19</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>24</x><y>266</y><w>190</w><h>304</h></coordinates><panel_attributes>Room
 --
 id  ID
 name
 roomType
-isLaunched
-launchDateTime
 price
 capacity
+description
+isLaunched
+launchDateTime
 
 
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>430</x><y>210</y><w>100</w><h>80</h></coordinates><panel_attributes>Admin
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>594</x><y>228</y><w>190</w><h>152</h></coordinates><panel_attributes>Admin
 --
-username  ID
-email
+username  ID1
+email ID2
 password
 
 
 
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>430</x><y>310</y><w>100</w><h>90</h></coordinates><panel_attributes>User
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>594</x><y>418</y><w>190</w><h>171</h></coordinates><panel_attributes>User
 --
-username  ID
-email
+username  ID1
+email ID2
 password
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>220</x><y>250</y><w>230</w><h>50</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>195</x><y>304</y><w>437</w><h>95</h></coordinates><panel_attributes>lt=-
 m1=0..*
 m2=1..1
-&lt; creates</panel_attributes><additional_attributes>10;20;210;20</additional_attributes></element><element><id>Relation</id><coordinates><x>220</x><y>310</y><w>230</w><h>50</h></coordinates><panel_attributes>lt=-
+&lt; creates</panel_attributes><additional_attributes>10;20;210;20</additional_attributes></element><element><id>Relation</id><coordinates><x>195</x><y>418</y><w>437</w><h>95</h></coordinates><panel_attributes>lt=-
 m1=0..*
 m2=1..1
-&lt; books</panel_attributes><additional_attributes>10;20;210;20</additional_attributes></element><element><id>Relation</id><coordinates><x>280</x><y>330</y><w>110</w><h>80</h></coordinates><panel_attributes>lt=[startDateTime].</panel_attributes><additional_attributes>50;10;50;60</additional_attributes></element><element><id>UMLClass</id><coordinates><x>280</x><y>390</y><w>100</w><h>50</h></coordinates><panel_attributes>Booking
+&lt; books</panel_attributes><additional_attributes>10;20;210;20</additional_attributes></element><element><id>Relation</id><coordinates><x>309</x><y>456</y><w>209</w><h>152</h></coordinates><panel_attributes>lt=[startDateTime].</panel_attributes><additional_attributes>50;10;50;60</additional_attributes></element><element><id>UMLClass</id><coordinates><x>309</x><y>570</y><w>190</w><h>95</h></coordinates><panel_attributes>Booking
 --
 endDateTime
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>260</x><y>90</y><w>130</w><h>100</h></coordinates><panel_attributes>PromoCode
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>271</x><y>0</y><w>247</w><h>190</h></coordinates><panel_attributes>PromoCode
 --
 promoCode ID1
 startDate ID1
 endDate
 discountPercentage
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>380</x><y>120</y><w>140</w><h>110</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>499</x><y>57</y><w>266</w><h>209</h></coordinates><panel_attributes>lt=-
 m1=0..*
 m2=1..1
 &lt; creates</panel_attributes><additional_attributes>10;20;100;20;100;90</additional_attributes></element></diagram>
