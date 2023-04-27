@@ -14,6 +14,6 @@ PK: (startDateTime, roomid)
 FK1: roomId REFERENCES Room(roomId)
 FK2: username REFERENCES User(username)
 
-PromoCode(promoCode, startDate, endDate, discountPercentage, username)
+PromoCode(promoCode, startDate, endDate, discountPercentage, createdBy)
 PK: (promoCode, startDate)
-FK: username REFERENCES User(username)
+FK: createdBy REFERENCES User(username)
