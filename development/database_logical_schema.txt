@@ -1,0 +1,19 @@
+Logical Design
+
+User(username, email, password, userType)
+PK: username 
+CK: email 
+
+Room(roomId, name, roomType, price, capacity, description, isLaunched, launchDateTime, isApproved, approvedDateTime, approvedBy, launchedBy)
+PK: roomId 
+FK1: approvedBy REFERENCES User(username) NULLABLE
+FK2: launchedBy REFERENCES User(username) NULLABLE
+
+Booking(startDateTime, roomId, endDateTime, username)
+PK: (startDateTime, roomid)
+FK1: roomId REFERENCES Room(roomId)
+FK2: username REFERENCES User(username)
+
+PromoCode(promoCode, startDate, endDate, discountPercentage, createdBy)
+PK: (promoCode, startDate)
+FK: createdBy REFERENCES User(username)
