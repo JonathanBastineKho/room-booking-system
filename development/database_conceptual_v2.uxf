@@ -1,0 +1,45 @@
+<diagram program="umletino" version="15.1"><zoom_level>12</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>60</x><y>336</y><w>144</w><h>228</h></coordinates><panel_attributes>Room
+--
+name
+roomType
+price
+capacity
+description
+isLaunched
+launchDateTime
+isApproved
+approvedDateTime
+
+
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>564</x><y>348</y><w>120</w><h>132</h></coordinates><panel_attributes>User
+--
+username  ID1
+email ID2
+password
+userType</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>192</x><y>396</y><w>396</w><h>60</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=0..1
+&lt; launched</panel_attributes><additional_attributes>10;20;310;20</additional_attributes></element><element><id>Relation</id><coordinates><x>444</x><y>468</y><w>216</w><h>180</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=1..1
+&lt; creates</panel_attributes><additional_attributes>10;120;140;120;140;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>324</x><y>576</y><w>132</w><h>108</h></coordinates><panel_attributes>Booking
+--
+startDateTime ID
+endDateTime
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>240</x><y>168</y><w>156</w><h>120</h></coordinates><panel_attributes>PromoCode
+--
+promoCode ID1
+startDate ID1
+endDate
+discountPercentage
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>384</x><y>204</y><w>276</w><h>168</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=1..1
+&lt; creates</panel_attributes><additional_attributes>10;20;190;20;190;120</additional_attributes></element><element><id>Relation</id><coordinates><x>192</x><y>360</y><w>396</w><h>60</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=0..1
+&lt; approves</panel_attributes><additional_attributes>10;20;310;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>108</x><y>564</y><w>96</w><h>36</h></coordinates><panel_attributes>room ID</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>132</x><y>588</y><w>216</w><h>96</h></coordinates><panel_attributes>lt=-
+m1=1..1
+m2=1..1
+&lt; has</panel_attributes><additional_attributes>10;10;10;50;160;50</additional_attributes></element></diagram>
