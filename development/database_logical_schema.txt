@@ -4,14 +4,14 @@ User(username, email, password, userType)
 PK: username 
 CK: email 
 
-Room(roomId, name, roomType, price, capacity, description, isLaunched, launchDateTime, isApproved, approvedDateTime, approvedBy, launchedBy)
-PK: roomId 
+Room(name, imgUrl, roomType, price, capacity, description, isLaunched, launchDateTime, isApproved, approvedDateTime, approvedBy, launchedBy)
+PK: name 
 FK1: approvedBy REFERENCES User(username) NULLABLE
 FK2: launchedBy REFERENCES User(username) NULLABLE
 
-Booking(startDateTime, roomId, endDateTime, username)
+Booking(startDateTime, roomName, endDateTime, username)
 PK: (startDateTime, roomid)
-FK1: roomId REFERENCES Room(roomId)
+FK1: roomName REFERENCES Room(name)
 FK2: username REFERENCES User(username)
 
 PromoCode(promoCode, startDate, endDate, discountPercentage, createdBy)

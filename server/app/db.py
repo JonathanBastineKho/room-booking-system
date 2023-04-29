@@ -27,8 +27,8 @@ class User(db.Model):
     
 class Room(db.Model):
     __tablename__ = 'room'
-    roomId = db.Column(db.String(50), primary_key=True)
-    name = db.Column(db.String(250), unique=True, nullable=False)
+    name = db.Column(db.String(250), primary_key=True)
+    imgUrl = db.Column(db.String(600), nullable=False) #Note: imgUrl is set such that the same image can be used
     roomType = db.Column(db.Enum(TypeOfRoom), nullable=False)
     price = db.Column(db.Integer, nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
@@ -51,7 +51,7 @@ class Booking(db.Model):
     
     startDateTime = db.Column(db.DateTime, primary_key=True)
     roomBookingRel = db.relationship("Room", back_populates='bookingRoomRel')
-    roomId = db.Column(db.String(50), db.ForeignKey('Room.roomId'), primary_key=True)
+    roomName = db.Column(db.String(250), db.ForeignKey('Room.name'), primary_key=True)
     endDateTime = db.Column(db.DateTime, nullable=False)
     bookedByRel = db.relationship("User", back_populates="userBookingRel", nullable=False)
     userId = db.Column(db.String(250), db.ForeignKey('User.username'))
@@ -69,5 +69,5 @@ class PromoCode(db.Model):
     
     
 
-#db.create_all()
+db.create_all()
 
