@@ -1,1 +1,3 @@
 .DS_Store
+instance/
+__pycache__/

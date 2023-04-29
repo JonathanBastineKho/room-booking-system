@@ -1,4 +1,4 @@
-from app import db 
+from app import db, app
 from enum import Enum
 
 class TypeOfRoom(Enum):
@@ -18,8 +18,8 @@ class User(db.Model):
     password = db.Column(db.String(250), nullable=False)
     userType = db.Column(db.Enum(TypeOfUser), nullable=False)
 
-    roomApprovedRel = db.relationship("Room", back_populates="approvedByRel")
-    roomLaunchedRel = db.relationship("Room", back_populates="launchedByRel")
+    roomApprovedRel = db.relationship("Room", back_populates="approvedByRel", foreign_keys="Room.approvedByUsername")
+    roomLaunchedRel = db.relationship("Room", back_populates="launchedByRel", foreign_keys="Room.launchedByUsername")
     userBookingRel = db.relationship("Booking", back_populates="bookedByRel")
     promoCodeRel = db.relationship("PromoCode", back_populates='createdByRel')
 
@@ -39,11 +39,11 @@ class Room(db.Model):
     approvedDateTime = db.Column(db.DateTime, nullable=False)
     
     bookingRoomRel = db.relationship("Booking", back_populates='roomBookingRel')
-    approvedByRel = db.relationship("User", back_populates="roomApprovedRel")
-    launchedByRel = db.relationship("User", back_populates="roomLaunchedRel")
+    approvedByRel = db.relationship("User", back_populates="roomApprovedRel", foreign_keys="Room.approvedByUsername")
+    launchedByRel = db.relationship("User", back_populates="roomLaunchedRel", foreign_keys="Room.launchedByUsername")
 
-    approvedByUsername = db.Column(db.String(250), db.ForeignKey('User.username'))
-    launchedByUsername = db.Column(db.String(250), db.ForeignKey('User.username'))
+    approvedByUsername = db.Column(db.String(250), db.ForeignKey('user.username'))
+    launchedByUsername = db.Column(db.String(250), db.ForeignKey('user.username'))
  
     
 class Booking(db.Model):
@@ -51,10 +51,10 @@ class Booking(db.Model):
     
     startDateTime = db.Column(db.DateTime, primary_key=True)
     roomBookingRel = db.relationship("Room", back_populates='bookingRoomRel')
-    roomName = db.Column(db.String(250), db.ForeignKey('Room.name'), primary_key=True)
+    roomName = db.Column(db.String(250), db.ForeignKey('room.name'), primary_key=True)
     endDateTime = db.Column(db.DateTime, nullable=False)
-    bookedByRel = db.relationship("User", back_populates="userBookingRel", nullable=False)
-    userId = db.Column(db.String(250), db.ForeignKey('User.username'))
+    bookedByRel = db.relationship("User", back_populates="userBookingRel")
+    userId = db.Column(db.String(250), db.ForeignKey('user.username'))
 
     
 class PromoCode(db.Model):
@@ -65,9 +65,8 @@ class PromoCode(db.Model):
     discountPercentage = db.Column(db.Integer, nullable=False)
 
     createdByRel = db.relationship("User", back_populates='promoCodeRel')
-    promoCreatedBy = db.Column(db.String(250), db.ForeignKey('User.username'), nullable=False)
+    promoCreatedBy = db.Column(db.String(250), db.ForeignKey('user.username'), nullable=False)
     
     
-
-db.create_all()
-
+with app.app_context():
+    db.create_all()

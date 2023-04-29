@@ -1,10 +1,10 @@
 from app import app, db, bcrypt, jwt
-from db import User, TypeOfUser
+from app.db import User, TypeOfUser
 from flask import request
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from functools import wraps
-from flask_jwt_extended import verify_jwt_in_request, get_jwt_claims
+from flask_jwt_extended import verify_jwt_in_request, get_jwt
 
 
 def roles_required(*roles):
@@ -14,7 +14,7 @@ def roles_required(*roles):
         def decorator(*args, **kwargs):
             # Verifying JWT
             verify_jwt_in_request()
-            claims = get_jwt_claims()
+            claims = get_jwt()
 
             # Check if the role sufficient enough
             if set(roles).intersection(set(claims.get('user_type', []))):
@@ -36,7 +36,7 @@ def user_lookup_callback(_jwt_header, jwt_data):
 def test():
     return {'status': 'Success'}
 
-@app.route('/api/register')
+@app.route('/api/register', methods=['POST'])
 def register():
     username = request.json.get("username", None)
     email = request.json.get("email", None)
@@ -56,8 +56,10 @@ def register():
         userType=TypeOfUser.STUDENT,
         password=bcrypt.generate_password_hash(password)
     )
-    db.session.add(new_user)
-    db.session.commit()
+    with app.app_context():
+        db.session.add(new_user)
+        db.session.commit()
+    return {'message' : 'User successfully registered', 'success' : True}
 
 
 @app.route('/api/login', methods=['POST'])
@@ -75,7 +77,7 @@ def login():
         identity=username, 
         additional_claims={
             'email': user.email,
-            'user_type': user.userType
+            'user_type': str(user.userType)
             }
         )
     return {'access_token' : access_token, 'success' : True}
@@ -83,7 +85,7 @@ def login():
 ''' PROTECTED ROUTES'''
 
 @app.route("/api/verify_token")
-@jwt_required
+@jwt_required()
 def verify_token():
     verify_jwt_in_request()
     return {'success' : True}
