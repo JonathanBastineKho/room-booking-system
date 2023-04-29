@@ -19,7 +19,7 @@ root.render(
 			{/* NavBar */}
 			<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
 			{/* Routes */}
-			<div className="dark min-h-screen bg-gray-800">
+			<div className="dark min-h-screen bg-gray-900">
 				<Routes>
 					{/* Login Page Route */}
 					<Route exact path="/" Component={LoginPage} />
