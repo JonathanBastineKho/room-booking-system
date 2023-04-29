@@ -2,7 +2,6 @@ from app import app, db, bcrypt, jwt
 from db import User, TypeOfUser
 from flask import request
 from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from functools import wraps
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_claims
@@ -82,3 +81,9 @@ def login():
     return {'access_token' : access_token, 'success' : True}
 
 ''' PROTECTED ROUTES'''
+
+@app.route("/api/verify_token")
+@jwt_required
+def verify_token():
+    verify_jwt_in_request()
+    return {'success' : True}
