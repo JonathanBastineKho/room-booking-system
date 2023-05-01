@@ -70,7 +70,7 @@ export default function DatePicker(props) {
 	return (
 		<div
 			id="select"
-			className="w-80"
+			className={props.className}
 			onBlur={() => {
 				if (open) {
 					setOpen(false);
