@@ -1,4 +1,4 @@
-<diagram program="umletino" version="15.1"><zoom_level>12</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>144</x><y>267</y><w>144</w><h>228</h></coordinates><panel_attributes>Room
+<diagram program="umletino" version="15.1"><zoom_level>12</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>120</x><y>315</y><w>144</w><h>228</h></coordinates><panel_attributes>Room
 --
 name ID
 imgUrl
@@ -13,33 +13,33 @@ approvedDateTime
 
 
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>648</x><y>279</y><w>120</w><h>132</h></coordinates><panel_attributes>User
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>624</x><y>327</y><w>120</w><h>132</h></coordinates><panel_attributes>User
 --
 username  ID1
 email ID2
 password
-userType</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>276</x><y>327</y><w>396</w><h>60</h></coordinates><panel_attributes>lt=-
+userType</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>252</x><y>375</y><w>396</w><h>60</h></coordinates><panel_attributes>lt=-
 m1=0..*
 m2=0..1
-&lt; launched</panel_attributes><additional_attributes>10;20;310;20</additional_attributes></element><element><id>Relation</id><coordinates><x>528</x><y>399</y><w>216</w><h>180</h></coordinates><panel_attributes>lt=-
+&lt; launched</panel_attributes><additional_attributes>10;20;310;20</additional_attributes></element><element><id>Relation</id><coordinates><x>492</x><y>447</y><w>228</w><h>180</h></coordinates><panel_attributes>lt=-
 m1=0..*
 m2=1..1
-&lt; creates</panel_attributes><additional_attributes>10;120;140;120;140;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>408</x><y>507</y><w>132</w><h>108</h></coordinates><panel_attributes>Booking
+&lt; creates</panel_attributes><additional_attributes>10;120;150;120;150;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>384</x><y>555</y><w>120</w><h>108</h></coordinates><panel_attributes>Booking
 --
 endDateTime
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>324</x><y>99</y><w>156</w><h>120</h></coordinates><panel_attributes>PromoCode
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>324</x><y>147</y><w>156</w><h>120</h></coordinates><panel_attributes>PromoCode
 --
 promoCode ID1
 startDate ID1
 endDate
 discountPercentage
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>468</x><y>135</y><w>276</w><h>168</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>468</x><y>183</y><w>252</w><h>168</h></coordinates><panel_attributes>lt=-
 m1=0..*
 m2=1..1
-&lt; creates</panel_attributes><additional_attributes>10;20;190;20;190;120</additional_attributes></element><element><id>Relation</id><coordinates><x>276</x><y>291</y><w>396</w><h>60</h></coordinates><panel_attributes>lt=-
+&lt; creates</panel_attributes><additional_attributes>10;20;170;20;170;120</additional_attributes></element><element><id>Relation</id><coordinates><x>252</x><y>339</y><w>396</w><h>60</h></coordinates><panel_attributes>lt=-
 m1=0..*
 m2=0..1
-&lt; approves</panel_attributes><additional_attributes>10;20;310;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>168</x><y>495</y><w>120</w><h>36</h></coordinates><panel_attributes>startDateTime</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>216</x><y>519</y><w>216</w><h>96</h></coordinates><panel_attributes>lt=-
+&lt; approves</panel_attributes><additional_attributes>10;20;310;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>144</x><y>543</y><w>120</w><h>36</h></coordinates><panel_attributes>startDateTime</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>192</x><y>567</y><w>216</w><h>96</h></coordinates><panel_attributes>lt=-
 m1=1..1
 m2=0..1
 has &gt;</panel_attributes><additional_attributes>10;10;10;50;160;50</additional_attributes></element></diagram>

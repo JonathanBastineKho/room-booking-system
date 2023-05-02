@@ -48,7 +48,6 @@ class Room(db.Model):
     
 class Booking(db.Model):
     __tablename__ = 'booking'
-    
     startDateTime = db.Column(db.DateTime, primary_key=True)
     roomBookingRel = db.relationship("Room", back_populates='bookingRoomRel')
     roomName = db.Column(db.String(250), db.ForeignKey('room.name'), primary_key=True)
