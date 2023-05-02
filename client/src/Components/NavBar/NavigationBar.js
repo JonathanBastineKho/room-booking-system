@@ -2,6 +2,7 @@
 import React, { useContext } from "react";
 import { Navbar, Dropdown } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
+import jwtDecode from "jwt-decode";
 
 // Imported local depenencies
 import NavigationLink from "./NavigationLink";
@@ -11,7 +12,8 @@ import { FaUserCircle } from "react-icons/fa";
 import { AuthContext } from "../Authentication/AuthContext";
 
 function NavigationBar(props) {
-    const { user, logout } = useContext(AuthContext);
+    const { token, logout } = useContext(AuthContext);
+	const user = jwtDecode(token);
 	const navigate = useNavigate();
 
     return (
