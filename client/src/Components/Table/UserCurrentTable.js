@@ -4,13 +4,37 @@ import React from "react";
 
 // Imported local dependencies
 import UserCurrentTableRow from "./UserCurrentTableRow";
+import { setHours } from "date-fns";
 
 function UserCurrentTable(props) {
+	// Dummy data -> change with props.data which will be extracted from API.
 	const data = [
-		{ name: "Room 1", date: "10 May 2023", time: "10:00 am - 01:00 pm" },
-		{ name: "Room 2", date: "9 May 2023", time: "10:00 am - 01:00 pm" },
-		{ name: "Room 3", date: "8 May 2023", time: "10:00 am - 01:00 pm" },
+		{
+			name: "Room 1",
+			start: setHours(new Date(), 9),
+			end: setHours(new Date(), 10),
+		},
+		{
+			name: "Room 2",
+			start: setHours(new Date(), 12),
+			end: setHours(new Date(), 13),
+		},
+		{
+			name: "Room 3",
+			start: setHours(new Date(), 15),
+			end: setHours(new Date(), 17),
+		},
 	];
+	// Dummy cancel -> change with props.cancelBooking with MODAL AND API
+	const cancelBooking = (name, start) => {
+		console.log("CANCEL", name, start);
+	};
+
+	// Dummy modify -> change with props.modifyBooking to open MODAL AND API
+	const modifyBooking = (name, start) => {
+		console.log("MODIFY", name, start);
+	};
+
 	return (
 		<Table hoverable={props.hoverable}>
 			<Table.Head>
@@ -26,7 +50,11 @@ function UserCurrentTable(props) {
 			</Table.Head>
 			<Table.Body className="divide-y">
 				{data.map((value) => (
-					<UserCurrentTableRow data={value} />
+					<UserCurrentTableRow
+						data={value}
+						cancelBooking={cancelBooking}
+						modifyBooking={modifyBooking}
+					/>
 				))}
 			</Table.Body>
 		</Table>
