@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Card, Label, TextInput, Checkbox, Button } from "flowbite-react";
+import { Card, Label, TextInput, Button } from "flowbite-react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../Authentication/AuthContext";
 import axios from "axios";
