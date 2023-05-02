@@ -59,8 +59,29 @@ def register():
     with app.app_context():
         db.session.add(new_user)
         db.session.commit()
-    return {'message' : 'User successfully registered', 'success' : True}
 
+    access_token = create_access_token(
+        identity=username,
+        additional_claims={
+            'email': email,
+            'user_type': 'Student'
+        }
+    )
+    return {'message' : 'User successfully registered', 'success' : True, 'access_token' : access_token}
+
+@app.route("/api/check_unique_email/<string:email>")
+def check_email(email):
+    with app.app_context():
+        if User.query.filter_by(email=email).one_or_none() == None:
+            return {"unique" : True}
+        return {"unique" : False}
+
+@app.route("/api/check_unique_username/<string:username>")
+def check_username(username):
+    with app.app_context():
+        if User.query.filter_by(username=username).one_or_none() == None:
+            return {"unique" : True}
+        return {"unique" : False}
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -77,7 +98,7 @@ def login():
         identity=username, 
         additional_claims={
             'email': user.email,
-            'user_type': str(user.userType)
+            'user_type': str(user.userType.value)
             }
         )
     return {'access_token' : access_token, 'success' : True}
