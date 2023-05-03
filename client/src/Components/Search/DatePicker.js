@@ -94,7 +94,7 @@ export default function DatePicker(props) {
 				</span>
 			</div>
 			<div
-				className={`absolute w-80 drop-shadow-md bg-gray-700 text-left flex-col mt-2 rounded-md 
+				className={`z-50 absolute w-80 drop-shadow-md bg-gray-700 text-left flex-col mt-2 rounded-md 
 							${open ? "h-auto" : "hidden"} `}
 			>
 				<div className="flex flex-row m-1 justify-center items-center gap-10 mb-2">

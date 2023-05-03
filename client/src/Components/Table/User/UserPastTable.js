@@ -13,19 +13,19 @@ function UserPastTable(props) {
 			name: "Room 1",
 			start: setHours(new Date(), 9),
 			end: setHours(new Date(), 10),
-			fee: "$20"
+			fee: 20,
 		},
 		{
 			name: "Room 2",
 			start: setHours(new Date(), 12),
 			end: setHours(new Date(), 13),
-			fee: "$20"
+			fee: 20,
 		},
 		{
 			name: "Room 3",
 			start: setHours(new Date(), 15),
 			end: setHours(new Date(), 17),
-			fee: "$40"
+			fee: 40,
 		},
 	];
 
