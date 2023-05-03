@@ -5,7 +5,7 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { Spinner } from "flowbite-react";
 
-const PrivateRoute = ({ requiredRole, children }) => {
+const UnAuthenticatedRoute = ({children}) => {
     const { token, logout } = useContext(AuthContext);
 
     const [auth, setAuth] = useState(false);
@@ -18,13 +18,10 @@ const PrivateRoute = ({ requiredRole, children }) => {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((res) => {
+                    console.log(res.data.success);
                     if (res.data.success) {
-                        const user = jwt_decode(token);
-                        if (user.user_type === requiredRole) {
-                            setAuth(true);
-                        }
+                        setAuth(true);
                     } else {
-                      logout();
                     }
                 })
                 .catch((error) => {
@@ -35,7 +32,7 @@ const PrivateRoute = ({ requiredRole, children }) => {
         } else {
             setIsTokenValidated(true);
         }
-    }, [requiredRole, token]);
+    }, [token]);
 
     if (!isTokenValidated) {
         return (
@@ -44,7 +41,18 @@ const PrivateRoute = ({ requiredRole, children }) => {
             </div>
         );
     }
-    return auth ? children : <Navigate to="/login" />;
-};
+    if (auth){
+        const user = jwt_decode(token);
+        if (user.user_type === "Student") {
+            return (<Navigate to="/" />);
+        } else if (user.user_type === "Staff"){
+            return (<Navigate to="/staff" />);
+        } else if (user.user_type === "Administrator"){
+            return (<Navigate to="/administrator" />);
+        }
+    } else {
+        return children;
+    }
+}
 
-export default PrivateRoute;
+export default UnAuthenticatedRoute;
