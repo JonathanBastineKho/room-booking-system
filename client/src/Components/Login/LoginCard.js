@@ -26,7 +26,7 @@ function LoginCard() {
             login(response.data.access_token);
             const userType = jwtDecode(response.data.access_token).user_type;
             if (userType === "Student") {
-                navigate("/student");
+                navigate("/");
             } else if (userType === "Staff") {
                 navigate("/staff");
             } else if (userType === "Administrator") {

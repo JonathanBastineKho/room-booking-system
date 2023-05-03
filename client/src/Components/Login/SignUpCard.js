@@ -31,7 +31,7 @@ function SignUpCard() {
                 .then((res) => {
                     if (res.data.success) {
                         login(res.data.access_token);
-                        navigate("/student");
+                        navigate("/");
                     }
                 })
                 .catch((error) => {

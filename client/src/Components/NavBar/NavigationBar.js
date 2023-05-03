@@ -47,8 +47,8 @@ function NavigationBar(props) {
                             </span>
                         </Dropdown.Header>
                         <Dropdown.Item onClick={(event) => {
-							navigate("/");
-							logout()
+							logout();
+							navigate("/login");
 						}}>Sign out</Dropdown.Item>
                     </Dropdown>
                     <Navbar.Toggle />

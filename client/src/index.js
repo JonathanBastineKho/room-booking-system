@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AuthProvider from "./Components/Authentication/AuthContext";
 import PrivateRoute from "./Components/Authentication/PrivateRoute";
+import UnAuthenticatedRoute from "./Components/Authentication/UnAuthenticateRoute";
 
 // Imported local dependencies
 import "./index.css";
@@ -23,13 +24,13 @@ root.render(
             <Routes>
                 {/* Login Page Route */}
                 <Route exact path="/test" element={<TestPage />} />
-                <Route exact path="/" element={<LoginPage />} />
-                <Route exact path="/register" element={<RegisterPage />} />
+                <Route exact path="/login" element={<UnAuthenticatedRoute><LoginPage /></UnAuthenticatedRoute>} />
+                <Route exact path="/register" element={<UnAuthenticatedRoute><RegisterPage /></UnAuthenticatedRoute>} />
                 {/* Register Page Route */}
 
                 {/* Other routes */}
                 <Route
-                    path="/student"
+                    path="/"
                     element={
                         <PrivateRoute requiredRole="Student">
                             <NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
