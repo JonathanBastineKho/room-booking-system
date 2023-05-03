@@ -1,7 +1,7 @@
 import React from "react";
 import SearchCard from "../Components/Search/SearchCard";
-import UserCurrentTable from "../Components/Table/UserCurrentTable";
-import UserPastTable from "../Components/Table/UserPastTable";
+import UserCurrentTable from "../Components/Table/User/UserCurrentTable";
+import UserPastTable from "../Components/Table/User/UserPastTable";
 
 export default function TestPage() {
     console.log("test page rendered");
