@@ -195,7 +195,7 @@ function RoomModal() {
                 </div>
               </div>
               <div className="flex justify-center gap-4">
-                <Button onClick={handleClose}>Book now</Button>
+                <Button className="w-full" onClick={handleClose}>Book now</Button>
               </div>
             </div>
           </Modal.Body>
