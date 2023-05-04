@@ -4,31 +4,31 @@ import React from "react";
 
 // Imported local dependencies
 import UserPastTableRow from "./UserPastTableRow";
+import { setHours } from "date-fns";
 
 function UserPastTable(props) {
+	// Dummy data -> change with props.data which will be extracted from API.
 	const data = [
 		{
 			name: "Room 1",
-			date: "10 May 2023",
-			time: "10:00 am - 01:00 pm",
-			duration: 3,
-			fee: "$20",
+			start: setHours(new Date(), 9),
+			end: setHours(new Date(), 10),
+			fee: 20,
 		},
 		{
 			name: "Room 2",
-			date: "9 May 2023",
-			time: "10:00 am - 01:00 pm",
-			duration: 3,
-			fee: "$20",
+			start: setHours(new Date(), 12),
+			end: setHours(new Date(), 13),
+			fee: 20,
 		},
 		{
 			name: "Room 3",
-			date: "8 May 2023",
-			time: "10:00 am - 01:00 pm",
-			duration: 3,
-			fee: "$20",
+			start: setHours(new Date(), 15),
+			end: setHours(new Date(), 17),
+			fee: 40,
 		},
 	];
+
 	return (
 		<Table hoverable={props.hoverable}>
 			<Table.Head>

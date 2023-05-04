@@ -1,6 +1,6 @@
 // Imported Libraries
 import React, { useState } from "react";
-import { Card, Label, TextInput, Checkbox, Button } from "flowbite-react";
+import { Card, Label, TextInput, Button } from "flowbite-react";
 
 // Imported local dependencies
 import DatePicker from "./DatePicker";
@@ -13,16 +13,16 @@ function SearchCard() {
 	const [filter, setFilter] = useState({
 		name: "",
 		date: new Date(),
-		cap_2: false,
-		cap_5: false,
-		cap_10: false,
-		cap_15: false,
-		cap_20: false
+		cap_2: true,
+		cap_5: true,
+		cap_10: true,
+		cap_15: true,
+		cap_20: true,
 	});
 
 	const searchRoom = () => {
-		console.log(filter)
-	} 
+		console.log(filter);
+	};
 
 	return (
 		<Card>
@@ -56,13 +56,14 @@ function SearchCard() {
 							setData={setFilter}
 							update_key="date"
 							min_date={new Date()}
+							className="w-80"
 						/>
 					</div>
 					<div>
 						<div className="mb-2 block">
 							<Label htmlFor="capacity" value="Select Capacity (pax)" />
 						</div>
-						<CapacityCheckbox setData={setFilter} />
+						<CapacityCheckbox setData={setFilter} data={filter} />
 					</div>
 				</div>
 				<Button type="button" onClick={() => searchRoom()}>
