@@ -7,8 +7,13 @@ from functools import wraps
 from flask_jwt_extended import verify_jwt_in_request, get_jwt
 from sqlalchemy import or_, and_
 from datetime import datetime
+from werkzeug.utils import secure_filename
+import os
 
-
+ALLOWED_EXTENSIONS = {'heic', 'png', 'jpg', 'jpeg', 'gif'}
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def roles_required(*roles):
     '''Function wrapper for protected routes'''
@@ -93,55 +98,62 @@ def verify_token():
     verify_jwt_in_request()
     return {'success' : True}
 
+def get_booking_slots(room_name, date, user):
+    startDateLow = datetime.strptime(f"{date} 09", '%Y-%m-%d %H')
+    startDateUp = datetime.strptime(f"{date} 17", '%Y-%m-%d %H')
 
-#args = request.args
-#    name = args.get('name')
-#    location = args.get('location')
+    bookings = Booking.query.filter(and_(Booking.roomName == room_name, Booking.startDateTime.between(startDateLow, startDateUp))).all()
 
-#dd-mm-yyyy 
+    booking_slots = [0,0,0,0,0,0,0,0,0]
+
+    for booking in bookings:
+        time_diff = booking.endDateTime.hour-booking.startDateTime.hour
+        if booking.userId == user:
+            booking_slots[booking.startDateTime.hour-9:booking.endDateTime.hour-9] = [2] * time_diff
+        else:
+            booking_slots[booking.startDateTime.hour-9:booking.endDateTime.hour-9] = [1] * time_diff
+    return booking_slots
+
 @app.route("/api/search", methods=['GET'])
 @jwt_required()
 def search():
     args = request.args
-    userRoomName = args.get('name')
-    userRoomType = args.get('roomtype')
-    userCapacityString = args.get('capacity')
-    userDateTimeString = args.get('datetime')
+    userRoomName = args.get('roomName')
+    capacity_list = args.getlist('capacity')
+    userDateTimeString = args.get('dateTime')
 
-    #make datetime object
-    userDateTime = datetime.strptime(userDateTimeString, '%Y-%m-%d %H:%M:%S')
-    userCapacity = list(userCapacityString)
-
-    capacity_list = []
-    list_of_capacity_values = [2,5,10,15,20]
-    for i in range(len(userCapacity)):
-        if userCapacity[i] == True:
-            capacity_list.append(list_of_capacity_values[i])
-
-    #full_room_sql_list = []
     room_list = []
     
-    if not userRoomName: #if room name is not defined
-        room_sql_list = Room.query.filter(and_(Room.roomType == userRoomType, Room.capacity.in_(capacity_list))).all()
-        for room in room_sql_list:
-            #user time > start time, then user time > end time as well
-            #user time < start time, then user time < end time as well
-            #if user time == start time, return false
-            if room.filter(and_(Booking.startDateTime < userDateTime, Booking.endDateTime < userDateTime)) or room.filter(and_(Booking.startDateTime > userDateTime, Booking.endDateTime > userDateTime)).all():
-                room_list.append(room)
+    if userRoomName == None or userRoomName == "": #if room name is not defined
+        room_sql_list = Room.query.filter(and_(
+            Room.capacity.in_(capacity_list), 
+            Room.isLaunched == True, 
+            Room.isApproved == True)).all()
     else:
-        room_sql_list = Room.query.filter(and_(Room.name.like(userRoomName), Room.roomType == userRoomType, Room.capacity.in_(capacity_list))).all()
+        room_sql_list = Room.query.filter(and_(
+            Room.name.like(f"%{userRoomName}%"), 
+            Room.capacity.in_(capacity_list),
+            Room.capacity.in_(capacity_list), 
+            Room.isLaunched == True, 
+            Room.isApproved == True)).all()
+
+    for room in room_sql_list:
+        booking_slots = get_booking_slots(room_name=room.name, date=userDateTimeString, user=get_jwt().get('sub'))
+        if 0 in booking_slots:  # if there is a booking slot
+            room_list.append(room)
     
-    for room in room_list:
-        room_list.append({"name": room.name, "imgUrl": room.imgUrl, "roomType": room.roomType, "price": room.price, "capacity": room.capacity, "description": room.description})
+    for i in range(len(room_list)):
+        r = room_list[i]
+        room_list[i] = {"name": r.name, "imgUrl": r.imgUrl, "roomType": r.roomType.value, "price": r.price, "capacity": r.capacity, "description": r.description}
+    
     return {"rooms": room_list}
+
 
 #user current booking
 @app.route("/api/current_bookings", methods=['GET'])
 @jwt_required()
 def view_current_bookings():
-    args = request.args 
-    userId = args.get('userId')
+    userId = userId = get_jwt().get('sub')
     currentDateTime = datetime.now()
 
     bookings_sql_list = Booking.query.filter(and_(Booking.endDateTime > currentDateTime), Booking.userId == userId).all()
@@ -156,11 +168,10 @@ def view_current_bookings():
 @app.route("/api/view_past_bookings", methods=['GET'])
 @jwt_required()
 def view_past_bookings():
-    args = request.args 
-    userId = args.get('userId')
+    userId = get_jwt().get('sub')
     currentDateTime = datetime.now()
 
-    bookings_sql_list = Booking.query.filter(and_(Booking.endDateTime < currentDateTime), Booking.userId == userId)
+    bookings_sql_list = Booking.query.filter(and_(Booking.endDateTime <= currentDateTime), Booking.userId == userId)
     booking_list = []
     for booking in bookings_sql_list:
         booking_list.append({"roomName": booking.roomName, "startDateTime": booking.startDateTime, "endDateTime": booking.endDateTime})
@@ -168,66 +179,73 @@ def view_past_bookings():
     return {"bookings": booking_list}
 
 #cancel booking
-@app.route("/api/cancel_bookings", methods=['POST'])
+@app.route("/api/cancel_bookings", methods=['DELETE'])
 @jwt_required()
 def cancel_booking():
-    userId = request.form.get('userId')
-    roomName = request.form.get('roomName')
-    startDateTimeString = request.form.get('startDateTime')
+    userId = get_jwt().get('sub')
+    roomName = request.json.get('roomName')
+    startDateTimeString = request.json.get('startDateTime')
 
     currentStartDateTime = datetime.now()
 
-    startDateTime = datetime.strptime(startDateTimeString, '%Y-%m-%d %H:%M:%S')
-
-    booking = Booking.query.filter(and_(Booking.userId == userId, Booking.roomName == roomName, Booking.startDateTime == startDateTime)).first()
-
+    startDateTime = datetime.strptime(startDateTimeString, '%Y-%m-%d %H')
     if currentStartDateTime > startDateTime:
         return {"success": False, "message": "You cannot cancel a booking which has already passed"}
     
     with app.app_context():
+        booking = Booking.query.filter(and_(Booking.userId == userId, Booking.roomName == roomName, Booking.startDateTime == startDateTime)).first()
+        if booking == None:
+            return {"success": False, "message": "Booking is not found"}
+        if booking.userId != userId:
+            return {"success": False, "message": "Booking is not found"}
         db.session.delete(booking)
         db.session.commit()
+        return {"success": True, "message": "Booking successfully deleted"}
 
 #modify booking
-@app.route("/api/modify_bookings", methods=['POST'])
+@app.route("/api/modify_bookings", methods=['PATCH'])
 @jwt_required()
 def modify_booking():
-    userId = request.form.get('userId')
-    roomName = request.form.get('roomName')
-    currStartDateTime = request.form.get('startDateTime')
-    currEndDateTime = request.form.get('endDateTime')
-    newStartDateTime = request.form.get('newStartDateTime')
-    newEndDateTime = request.form.get('newEndDateTime')
-
-    currStartDateTime = datetime.strptime(currStartDateTime, '%Y-%m-%d %H:%M:%S')
-    currEndDateTime = datetime.strptime(currEndDateTime, '%Y-%m-%d %H:%M:%S')
-    newStartDateTime = datetime.strptime(newStartDateTime, '%Y-%m-%d %H:%M:%S')
-    newEndDateTime = datetime.strptime(newEndDateTime, '%Y-%m-%d %H:%M:%S')
-
     #Conditions
     # new start date cannot be interfere in a previously booked room
         # query Booking table and check newStartDateTime and newEndDateTime
 
     # duration cannot be longer than previous duration
+    userId = get_jwt().get('sub')
+    roomName = request.json.get('roomName')
+    currStartDateTime = request.json.get('startDateTime')
+    newStartDateTime = request.json.get('newStartDateTime')
+    newEndDateTime = request.json.get('newEndDateTime')
 
-    currDifference = currEndDateTime - currStartDateTime
-
-    if (newEndDateTime - newStartDateTime) > currDifference:
-        return jsonify({"status": False, "message": f"The duration chosen is too long. Try again"})
-    else:
-        #affected_bookings = Booking.query.filter(and_(Booking.roomName == roomName, Booking.startDateTime >= newStartDateTime))
-        affected_bookings = Booking.query.filter(and_(Booking.roomName == roomName, Booking.startDateTime.between(newStartDateTime, newEndDateTime), Booking.endDateTime.between(newStartDateTime, newEndDateTime))).all()
+    currStartDateTime = datetime.strptime(currStartDateTime, '%Y-%m-%d %H')
+    newStartDateTime = datetime.strptime(newStartDateTime, '%Y-%m-%d %H')
+    newEndDateTime = datetime.strptime(newEndDateTime, '%Y-%m-%d %H')
+    with app.app_context():
+        booking_to_change = Booking.query.filter_by(roomName = roomName, startDateTime = currStartDateTime).one_or_none()
         
-        if len(affected_bookings) > 1:
-            return {"success": False, "message": "The inputted time clashes with another booking time"}
+        if booking_to_change == None:
+            return {"success" : False, "message" : "Booking is not found"}
         
-        #if program ends up here, no interfering bookings
-        #query booking
-        booking_to_change = Booking.query.filter(and_(Booking.userId == userId, Booking.roomName == roomName, Booking.startDateTime == currStartDateTime))
+        if booking_to_change.userId != userId:
+            return {"success" : False, "message" : "You only can change your own booking"}
 
-        with app.app_context():
+        currEndDateTime = booking_to_change.endDateTime
+        currDifference = currEndDateTime - currStartDateTime
+        if (newEndDateTime - newStartDateTime) > currDifference:
+            return {"status": False, "message": f"The duration chosen is too long. Try again"}
+        else:
+            #affected_bookings = Booking.query.filter(and_(Booking.roomName == roomName, Booking.startDateTime >= newStartDateTime))
+            affected_bookings = Booking.query.filter(and_(Booking.roomName == roomName, Booking.startDateTime.between(newStartDateTime, newEndDateTime), Booking.endDateTime.between(newStartDateTime, newEndDateTime))).first()
+
+            if affected_bookings != None:
+                return {"success": False, "message": "The inputted time clashes with another booking time"}
+            
+            #if program ends up here, no interfering bookings
+            #query booking
             booking_to_change.startDateTime = newStartDateTime
             booking_to_change.endDateTime = newEndDateTime
+            db.session.commit()
+            return {"success": True, "message": "Booking successfully modified"}
 
 #get schedule(date) 
 # - get list of rooms 
@@ -239,26 +257,16 @@ def modify_booking():
 @app.route("/api/schedule", methods=['GET'])
 @jwt_required()
 def get_scheduled_bookings():
-    dateString = request.args.get('date')
+    dateString = request.args.get('dateTime')
     user = get_jwt().get('sub')
 
-    dateRequestedLowerBound = datetime.strptime(f"{dateString} 09:00:00", '%Y-%m-%d %H:%M:%S')
-    dateRequestedUpperBound = datetime.strptime(f"{dateString} 17:00:00", '%Y-%m-%d %H:%M:%S')
     list_of_schedules = {}
 
-    list_of_rooms = Room.query.all()
+    list_of_rooms = Room.query.filter(and_(Room.isLaunched == True, Room.isApproved == True)).all()
     for room in list_of_rooms:
-        bookings = Booking.query.filter(and_(Booking.roomName == room.name, Booking.startDateTime.between(dateRequestedLowerBound, dateRequestedUpperBound))).order_by(Booking.startDateTime.asc()).all()
+        booking_slots = get_booking_slots(room_name=room.name, date=dateString, user=user)
+        list_of_schedules[room.name] = booking_slots
 
-        booking_slots = [0,0,0,0,0,0,0,0,0]
-
-        for booking in bookings:
-            if booking.userId == user:
-                booking_slots[booking.startDateTime.hour-9] = 2
-            else:
-                booking_slots[booking.startDateTime.hour-9] = 1
-
-        list_of_schedules[room.roomName] = booking_slots
     return list_of_schedules
 
 #get distinct type of rooms
@@ -268,28 +276,31 @@ def get_scheduled_bookings():
 # type 3
 @app.route("/api/types_of_rooms", methods=['GET'])
 @jwt_required()
-@roles_required('') #Administrator, Staff, Student
 def get_type_of_rooms():
     return {"typesOfRooms": [[room.value for room in TypeOfRoom]]}
 
-
 @app.route("/api/create_booking", methods=['POST'])
 @jwt_required()
-@roles_required('Student')
 def create_booking():
     roomName = request.json.get('roomName')
     startDateTimeString = request.json.get('startDateTime')
-    endDateTimeString = request.json.get('endDateTimeString')
+    endDateTimeString = request.json.get('endDateTime')
     user = get_jwt().get('sub')
 
     #convert the datetimes into object
-    startDateTime = datetime(startDateTimeString, '%Y-%m-%d %H:%M:%S')
-    endDateTime = datetime(endDateTimeString, '%Y-%m-%d %H:%M:%S')
+    startDateTime = datetime.strptime(startDateTimeString, '%Y-%m-%d %H')
+    endDateTime = datetime.strptime(endDateTimeString, '%Y-%m-%d %H')
 
-    clashed_bookings = Booking.query.filter(Booking.roomName == roomName).filter(or_(Booking.startDateTime.between(startDateTime, endDateTime), Booking.endDateTime.between(startDateTime, endDateTime))).first()
+    clashed_bookings = clashed_bookings = Booking.query.filter(
+        Booking.roomName == roomName,
+        or_(
+            and_(Booking.startDateTime >= startDateTime, Booking.startDateTime < endDateTime),
+            and_(Booking.endDateTime > startDateTime, Booking.endDateTime <= endDateTime)
+        )
+    ).first()
 
-    if len(clashed_bookings) > 0:
-        {"success": False, "message": "Failed because of clashed bookings"}
+    if clashed_bookings != None:
+        return {"success": False, "message": "Failed because of clashed bookings"}
     else:
         with app.app_context():
             new_booking = Booking(userId = user, roomName = roomName, startDateTime = startDateTime, endDateTime = endDateTime)
@@ -297,3 +308,62 @@ def create_booking():
             db.session.commit()
 
         return {"success": True, "message": "Sucessful"}
+
+@app.route("/api/create_room", methods=['POST'])
+@jwt_required()
+def create_room():
+    room_name = request.form.get('roomName')
+    if Room.query.filter_by(name = room_name).one_or_none():
+        return {"success" : False, "message" : "Room already exist"}
+    if 'file' not in request.files:
+        return {"success" : False, "message" : "No file part"}
+    file = request.files['file']
+    if file.filename == '':
+        return {"success" : False, "message" : "No selected file"}
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        new_room = Room(
+            name = room_name,
+            imgUrl = os.path.join(app.config['UPLOAD_FOLDER'], filename),
+            roomType = TypeOfRoom.__members__.get(request.form.get('roomType')),
+            price = request.form.get('price'),
+            capacity = request.form.get('capacity'),
+            description = request.form.get('description'),
+        )
+        with app.app_context():
+            db.session.add(new_room)
+            db.session.commit()
+        return {"success" : True, "message" : "Room successfully created"}
+
+@app.route("/api/launch_room", methods=['PATCH'])
+@jwt_required()
+def launch_room():
+    name = request.json.get("roomName")
+    with app.app_context():
+        room = Room.query.filter_by(name = name).one_or_none()
+        if room == None:
+            return {"success" : False, "message" : "Room does not exist"}
+        if room.isLaunched:
+            return {"success" : False, "message" : "Room is already launched"}
+        room.isLaunched = True
+        room.launchDateTime = datetime.now()
+        db.session.commit()
+        return {"success" : True, "message" : "Room successfully launched"}
+
+@app.route("/api/approve_room", methods=['PATCH'])
+@jwt_required()
+def approve_room():
+    name = request.json.get("roomName")
+    with app.app_context():
+        room = Room.query.filter_by(name = name).one_or_none()
+        if room == None:
+            return {"success" : False, "message" : "Room does not exist"}
+        if not room.isLaunched:
+            return {"success" : False, "message" : "Room has not been launched"}
+        if room.isApproved:
+            return {"success" : False, "message" : "Room is already approved"}
+        room.isApproved = True
+        room.approvedDateTime = datetime.now()
+        db.session.commit()
+        return {"success" : True, "message" : "Room approved"}

@@ -34,9 +34,9 @@ class Room(db.Model):
     capacity = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(10000), nullable=False)
     isLaunched = db.Column(db.Boolean, default=False, nullable=False)
-    launchDateTime = db.Column(db.DateTime, nullable=False)
+    launchDateTime = db.Column(db.DateTime, nullable=True, default=None)
     isApproved = db.Column(db.Boolean, default=False, nullable=False)
-    approvedDateTime = db.Column(db.DateTime, nullable=False)
+    approvedDateTime = db.Column(db.DateTime, nullable=True, default=None)
     
     bookingRoomRel = db.relationship("Booking", back_populates='roomBookingRel')
     approvedByRel = db.relationship("User", back_populates="roomApprovedRel", foreign_keys="Room.approvedByUsername")
