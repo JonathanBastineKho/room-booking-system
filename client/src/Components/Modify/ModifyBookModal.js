@@ -1,8 +1,7 @@
-import { Modal, Button, Dropdown, Select, Toast } from "flowbite-react";
+import { Modal, Button, Select } from "flowbite-react";
 import React, { useState, useEffect } from "react";
 import DatePicker from "../Search/DatePicker";
 import { format, setHours } from "date-fns";
-import { HiX } from "react-icons/hi";
 
 function ModifyBookModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -248,15 +247,6 @@ function ModifyBookModal() {
                   Modify
                 </Button>
               </div>
-              <Toast className="w-11/12">
-                <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
-                  <HiX className="h-5 w-5" />
-                </div>
-                <div className="ml-3 text-sm font-normal">
-                  Can't book for more than {initialBookingDuration} hours.
-                </div>
-                <Toast.Toggle />
-              </Toast>
             </div>
           </Modal.Body>
         </div>
