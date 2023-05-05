@@ -4,15 +4,22 @@ import React from "react";
 
 // Imported local dependencies
 import StaffPromoTableRow from "./StaffPromoTableRow";
+import { setHours } from "date-fns";
 
 function StaffPromoTable(props) {
 	// Dummy data -> change with props.data which will be extracted from API.
 	const data = [
 		{
 			promoCode: "STARRAILGIFT",
-			startDate: new Date(),
-			endDate: new Date(),
+			startDate: setHours(new Date(), 9),
+			endDate: setHours(new Date(), 10),
 			discount: 20,
+		},
+		{
+			promoCode: "STARRAILGIFTS",
+			startDate: setHours(new Date(), 11),
+			endDate: setHours(new Date(), 17),
+			discount: 10,
 		},
 	];
 
