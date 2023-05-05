@@ -52,8 +52,9 @@ function StaffRoomTable(props) {
 			<Table.Head>
 				<Table.HeadCell>Room name</Table.HeadCell>
 				<Table.HeadCell>Room type</Table.HeadCell>
-				<Table.HeadCell>Type</Table.HeadCell>
+				<Table.HeadCell>Price</Table.HeadCell>
 				<Table.HeadCell>Capacity</Table.HeadCell>
+				<Table.HeadCell>Description</Table.HeadCell>
 				<Table.HeadCell>Launched</Table.HeadCell>
 				<Table.HeadCell>
 					<span className="sr-only">Edit</span>
