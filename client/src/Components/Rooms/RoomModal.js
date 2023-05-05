@@ -2,7 +2,6 @@ import { Modal, Button, Dropdown, Select, Toast } from "flowbite-react";
 import React, { useState, useEffect } from "react";
 import DatePicker from "../Search/DatePicker";
 import { format, setHours } from "date-fns";
-import { AiOutlineCloseSquare } from "react-icons/ai";
 
 function RoomModal() {
   // date passed from parent component
@@ -15,6 +14,7 @@ function RoomModal() {
   });
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(0);
+  const [timeSlots, setTimeSlots] = useState([]);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -52,11 +52,10 @@ function RoomModal() {
     // 1 for booked, 0 for available
     // assume these times available: [9, 11, 13, 14, 16, 17]
     // unavailable: [10, 12, 15]
-    const timeSlots = [0, 1, 0, 1, 0, 0, 1, 0, 0];
-    return timeSlots;
+    return [0, 1, 0, 1, 0, 0, 1, 0, 0];
   };
 
-  var timeSlots = getTimeSlots("my roomName", new Date());
+  // var timeSlots = getTimeSlots("my roomName", new Date());
 
   var endSlots = [];
   let endFlag = false;
@@ -75,8 +74,7 @@ function RoomModal() {
   // do getRoomJson and getTimeSlots again
   // watch when booking date changes
   useEffect(() => {
-    roomJson = getRoomJson("my roomName");
-    timeSlots = getTimeSlots("my roomName", new Date());
+    setTimeSlots(getTimeSlots("my roomName", new Date()));
   }, [date]);
 
   const setNewStartTime = (ev) => {
@@ -90,12 +88,12 @@ function RoomModal() {
       <Modal
         show={isOpen}
         size="lg"
-        isOpen={isOpen}
         onClose={handleClose}
         dismissible={true}
-        position="center"
+        popup={true}
       >
         <div className="bg-gray-800 rounded-lg">
+          <Modal.Header />
           <Modal.Body>
             <img
               src={roomJson.imgUrl}
@@ -121,24 +119,21 @@ function RoomModal() {
 
               <div className="mb-5">
                 <div className="flex items-center font-normal text-white text-md mb-3">
-                  <div className="mr-5">
-                    <p>Booking date: </p>
+                  <div className="mr-5 w-36">
+                    <p>Booking date:</p>
                   </div>
-                  <div className="dark w-50">
-                    <DatePicker
-                      id="date"
-                      data={date}
-                      setData={setDate}
-                      update_key="date"
-                      min_date={new Date()}
-                    />
-                  </div>
+                  <DatePicker
+                    id="date"
+                    data={date}
+                    setData={setDate}
+                    update_key="date"
+                    min_date={new Date()}
+                    className="w-full"
+                  />
                 </div>
-                <div className="flex items-center font-normal text-white text-md">
-                  <div className="mr-3">
-                    <p>Start time: </p>
-                  </div>
-                  <div className="mr-5 dark">
+                <div className="flex items-center font-normal text-white text-md justify-between">
+                  <div className="flex flex-row">
+                    <div className="flex mr-5 items-center">Start time:</div>
                     <Select
                       value={startTime}
                       id="startTime"
@@ -162,40 +157,44 @@ function RoomModal() {
                       ;
                     </Select>
                   </div>
-                  <div className="mr-3">
-                    <p>End time: </p>
-                  </div>
-                  <div className="dark">
-                    <Select
-                      value={endTime}
-                      id="endTime"
-                      required={true}
-                      onChange={(event) => setEndTime(event.target.value)}
-                    >
-                      {endSlots.map((slot, index) => {
-                        var time = index + 10;
-                        // convert list to readable time slots (09:00)
-                        // var timeString = time < 10 ? `0${time}:00` : `${time}:00`;
-                        var timeString = format(
-                          setHours(new Date(), time),
-                          "h:00aaa"
-                        );
-                        return (
-                          <option
-                            value={index}
-                            disabled={slot == 1 || time <= startTime}
-                          >
-                            {timeString}
-                          </option>
-                        );
-                      })}
-                      ;
-                    </Select>
+                  <div className="flex flex-row">
+                    <div className="flex items-center mr-3">
+                      <p>End time: </p>
+                    </div>
+                    <div className="flex items-center">
+                      <Select
+                        value={endTime}
+                        id="endTime"
+                        required={true}
+                        onChange={(event) => setEndTime(event.target.value)}
+                      >
+                        {endSlots.map((slot, index) => {
+                          var time = index + 10;
+                          // convert list to readable time slots (09:00)
+                          // var timeString = time < 10 ? `0${time}:00` : `${time}:00`;
+                          var timeString = format(
+                            setHours(new Date(), time),
+                            "h:00aaa"
+                          );
+                          return (
+                            <option
+                              value={index}
+                              disabled={slot == 1 || time <= startTime}
+                            >
+                              {timeString}
+                            </option>
+                          );
+                        })}
+                        ;
+                      </Select>
+                    </div>
                   </div>
                 </div>
               </div>
               <div className="flex justify-center gap-4">
-                <Button className="w-full" onClick={handleClose}>Book now</Button>
+                <Button className="w-full" onClick={handleClose}>
+                  Book now
+                </Button>
               </div>
             </div>
           </Modal.Body>
