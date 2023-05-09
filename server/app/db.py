@@ -52,6 +52,7 @@ class Booking(db.Model):
     roomBookingRel = db.relationship("Room", back_populates='bookingRoomRel')
     roomName = db.Column(db.String(250), db.ForeignKey('room.name'), primary_key=True)
     endDateTime = db.Column(db.DateTime, nullable=False)
+    bookingPrice = db.Column(db.Float, nullable=False)
     bookedByRel = db.relationship("User", back_populates="userBookingRel")
     userId = db.Column(db.String(250), db.ForeignKey('user.username'))
 

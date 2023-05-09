@@ -9,4 +9,3 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     JWT_SECRET_KEY = os.environ.get('SECRET_KEY') or 'default-flask-key'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    UPLOAD_FOLDER = 'server/room_image/'

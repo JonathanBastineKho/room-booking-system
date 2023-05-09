@@ -1,6 +1,6 @@
 from app import app, db, bcrypt, jwt
 from app.db import User, TypeOfUser, Room, Booking, TypeOfRoom, PromoCode
-from flask import request, jsonify
+from flask import request, send_file
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from functools import wraps
@@ -9,6 +9,7 @@ from sqlalchemy import or_, and_
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
+import ntpath
 
 ALLOWED_EXTENSIONS = {'heic', 'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
@@ -85,7 +86,7 @@ def login():
         identity=username, 
         additional_claims={
             'email': user.email,
-            'user_type': str(user.userType)
+            'user_type': str(user.userType.value)
             }
         )
     return {'access_token' : access_token, 'success' : True}
@@ -286,7 +287,7 @@ def get_scheduled_bookings():
 @jwt_required()
 @roles_required('Student') #Administrator, Staff, Student
 def get_type_of_rooms():
-    return {"typesOfRooms": [[room.value for room in TypeOfRoom]]}
+    return {"typesOfRooms": [room.value for room in TypeOfRoom]}
 
 @app.route("/api/create_booking", methods=['POST'])
 @jwt_required()
@@ -294,11 +295,24 @@ def create_booking():
     roomName = request.json.get('roomName')
     startDateTimeString = request.json.get('startDateTime')
     endDateTimeString = request.json.get('endDateTime')
+    promoCode = request.json.get('promoCode')
     user = get_jwt().get('sub')
 
     #convert the datetimes into object
     startDateTime = datetime.strptime(startDateTimeString, '%Y-%m-%d %H')
     endDateTime = datetime.strptime(endDateTimeString, '%Y-%m-%d %H')
+    duration = endDateTime.hour - startDateTime.hour
+
+    # check promo code
+    if promoCode == None:
+        discount = 1
+    else:
+        promo = PromoCode.query.filter_by(promoCode = promoCode).one_or_none()
+        if promo == None:
+            return {"success": False, "message": "Promo code invalid"}
+        if startDateTime < promo.startDate or startDateTime >= promo.endDate:
+            return {"success": False, "message": "Promo code expired"}
+        discount = (100 - promo.discountPercentage) / 100
 
     clashed_bookings = clashed_bookings = Booking.query.filter(
         Booking.roomName == roomName,
@@ -312,7 +326,11 @@ def create_booking():
         return {"success": False, "message": "Failed because of clashed bookings"}
     else:
         with app.app_context():
-            new_booking = Booking(userId = user, roomName = roomName, startDateTime = startDateTime, endDateTime = endDateTime)
+            new_booking = Booking(userId = user, 
+                                roomName = roomName, 
+                                startDateTime = startDateTime, 
+                                endDateTime = endDateTime,
+                                bookingPrice = Room.query.get(roomName).price * discount * duration)
             db.session.add(new_booking)
             db.session.commit()
 
@@ -348,7 +366,9 @@ def create_room():
 
 @app.route("/api/launch_room", methods=['PATCH'])
 @jwt_required()
+@roles_required('Staff')
 def launch_room():
+    user = get_jwt().get('sub')
     name = request.json.get("roomName")
     with app.app_context():
         room = Room.query.filter_by(name = name).one_or_none()
@@ -358,12 +378,15 @@ def launch_room():
             return {"success" : False, "message" : "Room is already launched"}
         room.isLaunched = True
         room.launchDateTime = datetime.now()
+        room.launchedByUsername = user
         db.session.commit()
         return {"success" : True, "message" : "Room successfully launched"}
 
 @app.route("/api/approve_room", methods=['PATCH'])
 @jwt_required()
+@roles_required('Administrator')
 def approve_room():
+    user = get_jwt().get('sub')
     name = request.json.get("roomName")
     with app.app_context():
         room = Room.query.filter_by(name = name).one_or_none()
@@ -375,6 +398,7 @@ def approve_room():
             return {"success" : False, "message" : "Room is already approved"}
         room.isApproved = True
         room.approvedDateTime = datetime.now()
+        room.approvedByUsername = user
         db.session.commit()
         return {"success" : True, "message" : "Room approved"}
 
@@ -391,47 +415,69 @@ def get_list_of_rooms():
         accessible_rooms = Room.query.filter(Room.isLaunched == True).all()
     
     for room in accessible_rooms:
-        room_list.append({"roomName": room.roomName, "imgUrl":room.imgUrl, "roomType":room.roomType, "price": room.price, "capacity": room.capacity, "description": room.description, "isLaunched": room.isLaunched, "launchDateTime": room.launchDateTime, "isApproved": room.isApproved, "approveDateTime": room.approveDateTime})
+        room_list.append({"roomName": room.name, 
+                        "imgUrl":room.imgUrl, "roomType":room.roomType.value, 
+                        "price": room.price, "capacity": room.capacity, 
+                        "description": room.description, "isLaunched": room.isLaunched, 
+                        "launchDateTime": room.launchDateTime, "isApproved": room.isApproved, 
+                        "approvedDateTime": room.approvedDateTime, "approvedByUsername" : room.approvedByUsername,
+                        "launchedByUsername" : room.launchedByUsername})
     
     return {"rooms": room_list}
 
 
-@app.route("/api/modify_room", methods=['PATCH'])
+@app.route("/api/modify_room", methods=['GET', 'PATCH'])
 @jwt_required()
 @roles_required('Staff')
 def modify_room():
-    
-    roomName = request.json.get('roomName')
-    imgUrl = request.json.get('imgUrl')
-    roomType = request.json.get('roomType')
-    price = request.json.get('price')
-    capacity = request.json.get('capacity')
-    description = request.json.get('description')
-    isLaunched = request.json.get('isLaunched')
-    launchDateTime = request.json.get('launchDateTime')
-    isApproved = request.json.get('isApproved')
-    approvedDateTime = request.json.get('approvedDateTime')
-    newRoomName = request.json.get('newRoomName')
-
+    roomName = request.args.get('roomName')
     with app.app_context():
-        room = Room.query.filter(Room.roomName == roomName).one_or_none()
+        room = Room.query.filter(Room.name == roomName).one_or_none()
         if room == None:
-            return {"success": False, "message": "Room does not exist"}
-        if (Room.query.filter(Room.roomName == newRoomName).one_or_none() != None):
-            return {"success": False, "message": "New room name specified already exists"}
+                return {"success": False, "message": "Room does not exist"}
+        if request.method == 'GET':
+            file_path = room.imgUrl
+            head, tail = ntpath.split(file_path)
+            filename = tail or ntpath.basename(head)
+            
+            headers = {
+                'Content-Disposition': f'attachment; filename={filename}',
+                "roomType" : str(room.roomType.value),
+                "price" : room.price,
+                "capacity" : room.capacity,
+                "description" : room.description,
+                'file' : send_file(path_or_file=file_path)
+            }
+            return send_file(file_path, as_attachment=True), 200, headers
+            
 
-        room.roomName = newRoomName
-        room.imgUrl = imgUrl
-        room.roomType = roomType
-        room.price = price
-        room.capacity = capacity
-        room.description = description
-        room.isLaunched = isLaunched
-        room.launchDateTime = launchDateTime
-        room.isApproved = isApproved
-        room.approvedDateTime = approvedDateTime
+        elif request.method == 'PATCH':
+            roomType = request.form.get('roomType')
+            price = request.form.get('price')
+            capacity = request.form.get('capacity')
+            description = request.form.get('description')
+            newRoomName = request.form.get('newRoomName')
 
-        db.session.commit()
+            if (Room.query.filter(Room.name == newRoomName).one_or_none() != None):
+                return {"success": False, "message": "New room name specified already exists"}
+            if 'file' not in request.files:
+                return {"success" : False, "message" : "No file part"}
+            file = request.files['file']
+            if file.filename == '':
+                return {"success" : False, "message" : "No selected file"}
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                room.imgUrl = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                room.name = newRoomName
+                room.roomType = roomType
+                room.price = price
+                room.capacity = capacity
+                room.description = description
+
+                db.session.commit()
+            return {"success" : True, "message" : "Room successfully modified"}
 
 @app.route("/api/delete_room", methods=['DELETE'])
 @jwt_required()
@@ -439,67 +485,84 @@ def modify_room():
 def delete_room():
     roomName = request.json.get('roomName')
     with app.app_context():
-        room = Room.query.filter(Room.roomName == roomName).one_or_none()
+        room = Room.query.filter(Room.name == roomName).one_or_none()
 
         if room == None:
             return {"success": False, "message": "Room is not found"}
     
         db.session.delete(room)
         db.session.commit()
-
+        return {"success": True, "message": "Room successfully deleted"}
 
 
 @app.route("/api/create_promo_code", methods=['POST'])
 @jwt_required()
 @roles_required('Staff')
 def create_promo_code():
+    username = get_jwt().get('sub')
     promoCode = request.json.get('promoCode')
     startDate = request.json.get('startDate')
     endDate = request.json.get('endDate')
     discountPercentage = request.json.get('discountPercentage')
 
-    startDate = datetime.strptime(startDate)
-    endDate = datetime.strptime(endDate)
+    startDate = datetime.strptime(startDate, "%Y-%m-%d")
+    endDate = datetime.strptime(endDate, "%Y-%m-%d")
     discountPercentage = int(discountPercentage)
 
-    new_promo_code = PromoCode(
-        promoCode = promoCode,
-        startDate = startDate,
-        endDate = endDate,
-        discountPercentage = discountPercentage
-    )
+    # Check promocode alrd available
+    if PromoCode.query.filter_by(promoCode = promoCode, startDate = startDate).one_or_none() != None:
+        return {"success": False, "message": "Promocode already exist"}
+
+    # Check constraint
+    available_promo = PromoCode.query.filter_by(promoCode = promoCode).all()
+    if available_promo != None:
+        for promo in available_promo:
+            if (startDate > promo.startDate and startDate < promo.endDate) or (endDate > promo.startDate and endDate < promo.endDate):
+                return {"success": False, "message": "Promocode date range invalid"}
+
     with app.app_context():
+        new_promo_code = PromoCode(
+            promoCode = promoCode,
+            startDate = startDate,
+            endDate = endDate,
+            discountPercentage = discountPercentage,
+            promoCreatedBy = username
+        )
         db.session.add(new_promo_code)
         db.session.commit()
+    return {"success": True, "message": "Promo code successfully created"}
 
 @app.route("/api/modify_promo_code", methods=['PATCH'])
 @jwt_required()
 @roles_required('Staff')
 def modify_promo_code():
+    # Identifier
     promoCode = request.json.get('promoCode')
-    startDate = request.json.get('startDate')
-    endDate = request.json.get('endDate')
-    discountPercentage = request.json.get('discountPercentage')
+    startDate = datetime.strptime(request.json.get('startDate'), "%Y-%m-%d")
+    
+    newStartDate = datetime.strptime(request.json.get('newstartDate'), "%Y-%m-%d")
+    newendDate = datetime.strptime(request.json.get('newendDate'), "%Y-%m-%d")
+    discountPercentage = int(request.json.get('discountPercentage'))
     newPromoCode = request.json.get('newPromoCode')
 
-    startDate = datetime.strptime(startDate)
-    endDate = datetime.strptime(endDate)
-    discountPercentage = int(discountPercentage)
-
     with app.app_context():
-        promo_code_to_change = PromoCode.query.filter(PromoCode.promoCode == promoCode).one_or_none()
+        promo_code_to_change = PromoCode.query.filter_by(promoCode = promoCode, startDate = startDate).one_or_none()
 
         if promo_code_to_change == None:
             return {"success": False, "message": "Promotional code does not exist"}
 
-        if (PromoCode.query.filter(PromoCode.promoCode == newPromoCode).one_or_none() != None):
-            return {"success": False, "message": "New promotional code name already exists"}
+        available_promo = PromoCode.query.filter_by(promoCode = newPromoCode).all()
+        if available_promo != None:
+            for promo in available_promo:
+                if (newStartDate > promo.startDate and newStartDate < promo.endDate) or (newendDate > promo.startDate and newendDate < promo.endDate):
+                    return {"success": False, "message": "Promocode date range invalid"}
         
         promo_code_to_change.promoCode = newPromoCode
-        promo_code_to_change.startDate = startDate
-        promo_code_to_change.endDate = endDate
+        promo_code_to_change.startDate = newStartDate
+        promo_code_to_change.endDate = newendDate
         promo_code_to_change.discountPercentage = discountPercentage
         db.session.commit()
+        return {"success": True, "message": "Promo code successfully modified"}
 
 
 @app.route("/api/delete_promo_code", methods=['DELETE'])
@@ -507,11 +570,73 @@ def modify_promo_code():
 @roles_required('Staff')
 def delete_promo_code():
     promoCode = request.json.get('promoCode')
+    startDate = datetime.strptime(request.json.get('startDate'), "%Y-%m-%d")
     
     with app.app_context():
-        promo_code_to_delete = PromoCode.query.filter(PromoCode.promoCode == promoCode).one_or_none
+        promo_code_to_delete = PromoCode.query.filter_by(promoCode=promoCode, startDate=startDate).one_or_none()
         if promo_code_to_delete == None:
             return {"success": False, "message": "The promotional code does not exist"}
         
         db.session.delete(promo_code_to_delete)
         db.session.commit()
+        return {"success": True, "message": "Promo code successfully deleted"}
+
+
+# TO BE DELETED LATER
+@app.route("/api/register_staff", methods=['POST'])
+def register_staff():
+    username = request.json.get("username", None)
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+
+    # Check whether username or email is already in the database (must be unique)
+    username_in_database = User.query.filter_by(username=username).one_or_none()
+    email_in_database = User.query.filter_by(email=email).one_or_none()
+    
+    if username_in_database or email_in_database:
+        return {'message' : 'username or email are already registered', 'success' : False}
+
+    # If register is successful, create new user
+    new_user = User(
+        username=username,
+        email=email,
+        userType=TypeOfUser.STAFF,
+        password=bcrypt.generate_password_hash(password)
+    )
+    with app.app_context():
+        db.session.add(new_user)
+        db.session.commit()
+    return {'message' : 'User successfully registered', 'success' : True}
+
+    # TO BE DELETED LATER
+@app.route("/api/register_admin", methods=['POST'])
+def register_admin():
+    username = request.json.get("username", None)
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+
+    # Check whether username or email is already in the database (must be unique)
+    username_in_database = User.query.filter_by(username=username).one_or_none()
+    email_in_database = User.query.filter_by(email=email).one_or_none()
+    
+    if username_in_database or email_in_database:
+        return {'message' : 'username or email are already registered', 'success' : False}
+
+    # If register is successful, create new user
+    new_user = User(
+        username=username,
+        email=email,
+        userType=TypeOfUser.ADMININSTRATOR,
+        password=bcrypt.generate_password_hash(password)
+    )
+    with app.app_context():
+        db.session.add(new_user)
+        db.session.commit()
+    return {'message' : 'User successfully registered', 'success' : True}
+
+# things to be check:
+# modify_room
+# modify_promoCode
+# test create booking
+
+# get room_schedule
