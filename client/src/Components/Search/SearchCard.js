@@ -9,7 +9,7 @@ import DatePicker from "./DatePicker";
 import { AiOutlineSearch } from "react-icons/ai";
 import CapacityCheckbox from "./CapacityCheckbox";
 
-function SearchCard() {
+function SearchCard(props) {
 	const [filter, setFilter] = useState({
 		name: "",
 		date: new Date(),
@@ -25,8 +25,8 @@ function SearchCard() {
 	};
 
 	return (
-		<Card>
-			<form className="flex flex-col gap-4">
+		<Card className={props.className}>
+			<form className={"flex flex-col gap-4 "}>
 				<div>
 					<div className="mb-2 block">
 						<Label htmlFor="name" value="Search Room Name" />
@@ -45,8 +45,8 @@ function SearchCard() {
 						}
 					/>
 				</div>
-				<div className="flex flex-row gap-10">
-					<div>
+				<div className="flex flex-row gap-10 w-full">
+					<div className="w-1/2">
 						<div className="mb-2 block">
 							<Label htmlFor="date" value="Select Date" />
 						</div>
@@ -56,10 +56,10 @@ function SearchCard() {
 							setData={setFilter}
 							update_key="date"
 							min_date={new Date()}
-							className="w-80"
+							className="w-full"
 						/>
 					</div>
-					<div>
+					<div className="w-1/2">
 						<div className="mb-2 block">
 							<Label htmlFor="capacity" value="Select Capacity (pax)" />
 						</div>
