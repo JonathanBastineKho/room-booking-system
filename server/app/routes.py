@@ -595,6 +595,12 @@ def get_room_schedule():
         slot = get_booking_slots(room_name=room_name, date=date, user=user)
         return {"success" : True, "slot" : slot}
 
+@app.route("/api/get_room_image")
+def get_room_image():
+    room_name = request.args.get("roomName")
+    file_path = Room.query.get(room_name).imgUrl
+    return send_file(file_path, mimetype='image/jpeg')
+
 # TO BE DELETED LATER
 @app.route("/api/register_staff", methods=['POST'])
 def register_staff():
