@@ -581,6 +581,19 @@ def delete_promo_code():
         db.session.commit()
         return {"success": True, "message": "Promo code successfully deleted"}
 
+@app.route("/api/room_schedule")
+@jwt_required()
+@roles_required('Student')
+def get_room_schedule():
+    date = request.args.get('date')
+    room_name = request.args.get('roomName')
+    user = get_jwt().get('sub')
+    with app.app_context():
+        room = Room.query.get(room_name)
+        if room == None:
+            return {"success" : False, "message" : "room is invalid"}
+        slot = get_booking_slots(room_name=room_name, date=date, user=user)
+        return {"success" : True, "slot" : slot}
 
 # TO BE DELETED LATER
 @app.route("/api/register_staff", methods=['POST'])
