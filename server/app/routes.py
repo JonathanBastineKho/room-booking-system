@@ -184,7 +184,10 @@ def view_current_bookings():
     bookings_sql_list = Booking.query.filter(and_(Booking.endDateTime > currentDateTime), Booking.userId == userId).all()
     booking_list = []
     for booking in bookings_sql_list:
-        booking_list.append({"roomName": booking.roomName, "startDateTime": booking.startDateTime, "endDateTime": booking.endDateTime})
+        booking_list.append({"roomName": booking.roomName, 
+        "startDateTime": str(booking.startDateTime.replace(tzinfo=None)), 
+        "endDateTime": str(booking.endDateTime.replace(tzinfo=None)),
+        "bookingPrice" : booking.bookingPrice})
     
     return {"bookings": booking_list}
 
@@ -200,7 +203,10 @@ def view_past_bookings():
     bookings_sql_list = Booking.query.filter(and_(Booking.endDateTime <= currentDateTime), Booking.userId == userId)
     booking_list = []
     for booking in bookings_sql_list:
-        booking_list.append({"roomName": booking.roomName, "startDateTime": booking.startDateTime, "endDateTime": booking.endDateTime})
+        booking_list.append({"roomName": booking.roomName, 
+        "startDateTime": str(booking.startDateTime.replace(tzinfo=None)), 
+        "endDateTime": str(booking.endDateTime.replace(tzinfo=None)),
+        "bookingPrice" : booking.bookingPrice})
     
     return {"bookings": booking_list}
 
@@ -263,10 +269,14 @@ def modify_booking():
         if (newEndDateTime - newStartDateTime) > currDifference:
             return {"status": False, "message": f"The duration chosen is too long. Try again"}
         else:
-            #affected_bookings = Booking.query.filter(and_(Booking.roomName == roomName, Booking.startDateTime >= newStartDateTime))
-            affected_bookings = Booking.query.filter(and_(Booking.roomName == roomName, Booking.startDateTime.between(newStartDateTime, newEndDateTime), Booking.endDateTime.between(newStartDateTime, newEndDateTime))).first()
-
-            if affected_bookings != None:
+            clashed_bookings = Booking.query.filter(
+            Booking.roomName == roomName,
+            or_(
+                and_(Booking.startDateTime >= newStartDateTime, Booking.startDateTime < newEndDateTime),
+                and_(Booking.endDateTime > newStartDateTime, Booking.endDateTime <= newEndDateTime)
+            )
+        ).first()
+            if clashed_bookings != None:
                 return {"success": False, "message": "The inputted time clashes with another booking time"}
             
             #if program ends up here, no interfering bookings
@@ -335,7 +345,7 @@ def create_booking():
             return {"success": False, "message": "Promo code expired"}
         discount = (100 - promo.discountPercentage) / 100
 
-    clashed_bookings = clashed_bookings = Booking.query.filter(
+    clashed_bookings = Booking.query.filter(
         Booking.roomName == roomName,
         or_(
             and_(Booking.startDateTime >= startDateTime, Booking.startDateTime < endDateTime),
@@ -440,8 +450,10 @@ def get_list_of_rooms():
                         "imgUrl":room.imgUrl, "roomType":room.roomType.value, 
                         "price": room.price, "capacity": room.capacity, 
                         "description": room.description, "isLaunched": room.isLaunched, 
-                        "launchDateTime": room.launchDateTime, "isApproved": room.isApproved, 
-                        "approvedDateTime": room.approvedDateTime, "approvedByUsername" : room.approvedByUsername,
+                        "launchDateTime": str(room.launchDateTime.replace(tzinfo=None)) if room.launchDateTime  else None, 
+                        "isApproved": room.isApproved, 
+                        "approvedDateTime": str(room.approvedDateTime.replace(tzinfo=None)) if room.approvedDateTime else None, 
+                        "approvedByUsername" : room.approvedByUsername,
                         "launchedByUsername" : room.launchedByUsername})
     
     return {"rooms": room_list}
