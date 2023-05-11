@@ -450,8 +450,10 @@ def get_list_of_rooms():
                         "imgUrl":room.imgUrl, "roomType":room.roomType.value, 
                         "price": room.price, "capacity": room.capacity, 
                         "description": room.description, "isLaunched": room.isLaunched, 
-                        "launchDateTime": room.launchDateTime, "isApproved": room.isApproved, 
-                        "approvedDateTime": room.approvedDateTime, "approvedByUsername" : room.approvedByUsername,
+                        "launchDateTime": str(room.launchDateTime.replace(tzinfo=None)) if room.launchDateTime  else None, 
+                        "isApproved": room.isApproved, 
+                        "approvedDateTime": str(room.approvedDateTime.replace(tzinfo=None)) if room.approvedDateTime else None, 
+                        "approvedByUsername" : room.approvedByUsername,
                         "launchedByUsername" : room.launchedByUsername})
     
     return {"rooms": room_list}
