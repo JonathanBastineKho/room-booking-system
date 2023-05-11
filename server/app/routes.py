@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required
 from functools import wraps
 from flask_jwt_extended import verify_jwt_in_request, get_jwt
 from sqlalchemy import or_, and_
-from datetime import datetime
+from datetime import datetime, timezone
 from werkzeug.utils import secure_filename
 import os
 import ntpath
@@ -185,8 +185,8 @@ def view_current_bookings():
     booking_list = []
     for booking in bookings_sql_list:
         booking_list.append({"roomName": booking.roomName, 
-        "startDateTime": booking.startDateTime, 
-        "endDateTime": booking.endDateTime,
+        "startDateTime": str(booking.startDateTime.replace(tzinfo=None)), 
+        "endDateTime": str(booking.endDateTime.replace(tzinfo=None)),
         "bookingPrice" : booking.bookingPrice})
     
     return {"bookings": booking_list}
@@ -204,8 +204,8 @@ def view_past_bookings():
     booking_list = []
     for booking in bookings_sql_list:
         booking_list.append({"roomName": booking.roomName, 
-        "startDateTime": booking.startDateTime, 
-        "endDateTime": booking.endDateTime,
+        "startDateTime": str(booking.startDateTime.replace(tzinfo=None)), 
+        "endDateTime": str(booking.endDateTime.replace(tzinfo=None)),
         "bookingPrice" : booking.bookingPrice})
     
     return {"bookings": booking_list}
