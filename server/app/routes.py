@@ -276,7 +276,7 @@ def modify_booking():
                 and_(Booking.endDateTime > newStartDateTime, Booking.endDateTime <= newEndDateTime)
             )
         ).first()
-            if clashed_bookings != None:
+            if clashed_bookings != None and clashed_bookings.roomName != roomName and clashed_bookings.startDate != currStartDateTime:
                 return {"success": False, "message": "The inputted time clashes with another booking time"}
             
             #if program ends up here, no interfering bookings
