@@ -692,3 +692,19 @@ def register_admin():
 # test create booking
 
 # get room_schedule
+
+@app.route("/api/view_bookings_admin", methods=['GET'])
+def view_bookings_admin():
+    startDateTimeString = request.args.get('startDateTime')
+    endDateTimeString = request.args.get('endDateTime')
+    startDateTime = datetime.strptime(f"{startDateTimeString} 09", '%Y-%m-%d %H')
+    endDateTime = datetime.strptime(f"{endDateTimeString} 17", '%Y-%m-%d %H')
+
+    booking_list = []
+
+    booking_sql_list = Booking.query.filter(Booking.startDateTime.between(startDateTime, endDateTime))
+
+    for booking in booking_sql_list:
+        booking_list.append({"roomName": booking.roomName, "startTime": booking.startDateTime, "endTime": booking.endDateTime})
+    
+    return {"bookings": booking_list}
