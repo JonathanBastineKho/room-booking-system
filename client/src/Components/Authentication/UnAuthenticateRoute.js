@@ -21,7 +21,6 @@ const UnAuthenticatedRoute = ({children}) => {
                     console.log(res.data.success);
                     if (res.data.success) {
                         setAuth(true);
-                    } else {
                     }
                 })
                 .catch((error) => {

@@ -19,10 +19,7 @@ const PrivateRoute = ({ requiredRole, children }) => {
                 })
                 .then((res) => {
                     if (res.data.success) {
-                        const user = jwt_decode(token);
-                        if (user.user_type === requiredRole) {
-                            setAuth(true);
-                        }
+                        setAuth(true);
                     } else {
                       logout();
                     }
@@ -44,7 +41,21 @@ const PrivateRoute = ({ requiredRole, children }) => {
             </div>
         );
     }
-    return auth ? children : <Navigate to="/login" />;
+    // return auth ? children : <Navigate to="/login" />;
+    if (auth){
+        const user = jwt_decode(token);
+        if (user.user_type === requiredRole){
+            return children
+        } else if (user.user_type === "Student"){
+            return <Navigate to="/" />
+        } else if (user.user_type === "Staff") {
+            return <Navigate to="/staff" />
+        } else if (user.user_type === "Administrator"){
+            return <Navigate to="/administrator" />
+        }
+    } else {
+        return <Navigate to="/login" />
+    }
 };
 
 export default PrivateRoute;
