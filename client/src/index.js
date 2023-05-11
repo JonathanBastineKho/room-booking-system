@@ -14,37 +14,63 @@ import LoginPage from "./Pages/LoginPage";
 import TestPage from "./Pages/TestPage";
 import RegisterPage from "./Pages/RegisterPage";
 import StudentDashboard from "./Pages/StudentDashboard";
+import SearchResultPage from "./Pages/SearchResultPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-    // <React.StrictMode>
-    <AuthProvider>
-        <BrowserRouter>
-            {/* Routes */}
-            <Routes>
-                {/* Login Page Route */}
-                <Route exact path="/login" element={<UnAuthenticatedRoute><LoginPage /></UnAuthenticatedRoute>} />
-                {/* Register Page Route */}
-				<Route exact path="/register" element={<UnAuthenticatedRoute><RegisterPage /></UnAuthenticatedRoute>} />
+	// <React.StrictMode>
+	<AuthProvider>
+		<BrowserRouter>
+			{/* Routes */}
+			<Routes>
+				{/* Login Page Route */}
+				<Route
+					exact
+					path="/login"
+					element={
+						<UnAuthenticatedRoute>
+							<LoginPage />
+						</UnAuthenticatedRoute>
+					}
+				/>
+				{/* Register Page Route */}
+				<Route
+					exact
+					path="/register"
+					element={
+						<UnAuthenticatedRoute>
+							<RegisterPage />
+						</UnAuthenticatedRoute>
+					}
+				/>
 
 				{/* Student Routes */}
 				<Route
-                    path="/"
-                    element={
-                        <PrivateRoute requiredRole="Student">
-                            <NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
-                            <StudentDashboard />
-                        </PrivateRoute>
-                    }
-                />
-                {/* Other routes */}
+					path="/"
+					element={
+						<PrivateRoute requiredRole="Student">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<StudentDashboard />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/search"
+					element={
+						<PrivateRoute requiredRole="Student">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<SearchResultPage />
+						</PrivateRoute>
+					}
+				/>
+				{/* Other routes */}
 				<Route exact path="/test" element={<TestPage />} />
-            </Routes>
-        </BrowserRouter>
-    </AuthProvider>
+			</Routes>
+		</BrowserRouter>
+	</AuthProvider>
 
-    // </React.StrictMode>
+	// </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

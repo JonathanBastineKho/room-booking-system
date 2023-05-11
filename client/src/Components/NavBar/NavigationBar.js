@@ -57,7 +57,7 @@ function NavigationBar(props) {
                     <Navbar.Collapse>
                         <NavigationLink target="/">Home</NavigationLink>
                         <NavigationLink target="/test">Schedule</NavigationLink>
-                        <NavigationLink target="/">Bookings</NavigationLink>
+                        <NavigationLink target="/#current_booking">Bookings</NavigationLink>
                     </Navbar.Collapse>
                 ) : (
                     <Navbar.Collapse>
