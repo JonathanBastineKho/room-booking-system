@@ -1,8 +1,11 @@
 // Imported Libraries
-import { Table } from "flowbite-react";
+import { Button, Modal, Table } from "flowbite-react";
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { setHours, setMonth } from "date-fns";
+import { format, setHours, setMonth } from "date-fns";
+
+// Imported icons
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 // Imported local dependencies
 import UserCurrentTableRow from "./UserCurrentTableRow";
@@ -27,30 +30,106 @@ function UserCurrentTable(props) {
 	// 		end: setHours(new Date(), 17),
 	// 	},
 	// ];
-	const { token, logout} = useContext(AuthContext);
-	const { data, setData } = useState([]);
-	
+	const { token, logout } = useContext(AuthContext);
+	const [bookings, setBookings] = useState([]);
+
 	useEffect(() => {
-		axios.get("/api/current_bookings", {
-				headers: { Authorization: `Bearer ${token}` },
-			})
-			.then((res) => {
-				setData(res.data.bookings);
-				console.log(res.data.bookings);
-			})
-			.catch((error) => {
-				console.log(error);
-				logout();
-			});
+		getCurrentBookings();
 	}, []);
+
+	const getCurrentBookings = () => {
+		if (token) {
+			axios
+				.get("/api/current_bookings", {
+					headers: { Authorization: `Bearer ${token}` },
+				})
+				.then((res) => {
+					const temp = [];
+					// console.log(res.data.bookings)
+					res.data.bookings.map((rows) => {
+						console.log(rows.startDateTime);
+						let temp_dict = {
+							name: rows.roomName,
+							start: new Date(rows.startDateTime.replace(" GMT", "")),
+							end: new Date(rows.endDateTime.replace(" GMT", "")),
+						};
+						temp.push(temp_dict);
+					});
+					setBookings(temp);
+				})
+				.catch((error) => {
+					console.log(error);
+					logout();
+				});
+		}
+	};
+
 	// Dummy cancel -> change with props.cancelBooking with MODAL AND API
 	const cancelBooking = (name, start) => {
-		console.log("CANCEL", name, start);
+		console.log(token);
+		if (token) {
+			axios
+				.delete("/api/cancel_bookings", {
+					data: {
+						roomName: name,
+						startDateTime: format(start, "yyyy-MM-dd HH"),
+					},
+					headers: {
+						Authorization: `Bearer ${token}`,
+						"Content-Type": "application/json",
+					},
+				})
+				.then((res) => {
+					console.log(res.data.message);
+					if (res.data.success) {
+						getCurrentBookings();
+					} else {
+						alert(res.data.message);
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+					logout();
+				});
+		}
 	};
 
 	// Dummy modify -> change with props.modifyBooking to open MODAL AND API
-	const modifyBooking = (name, start) => {
-		console.log("MODIFY", name, start);
+	const modifyBooking = (name, start, newStart, newEnd) => {
+		console.log(token);
+		if (token) {
+			axios
+				.patch("/api/modify_bookings", {
+					data: {
+						roomName: name,
+						startDateTime: format(start, "yyyy-MM-dd HH"),
+						newStartDateTime: format(newStart, "yyyy-MM-dd HH"),
+						newEndDateTime: format(newEnd, "yyyy-MM-dd HH"),
+					},
+					headers: {
+						Authorization: `Bearer ${token}`,
+						"Content-Type": "application/json",
+					},
+				})
+				.then((res) => {
+					console.log(res.data.message);
+					if (res.data.success) {
+						getCurrentBookings();
+					} else {
+						alert(res.data.message);
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+					console.log({
+						roomName: name,
+						startDateTime: format(start, "yyyy-MM-dd HH"),
+						newStartDateTime: format(newStart, "yyyy-MM-dd HH"),
+						newEndDateTime: format(newEnd, "yyyy-MM-dd HH"),
+					});
+					// logout();
+				});
+		}
 	};
 
 	return (
@@ -67,7 +146,7 @@ function UserCurrentTable(props) {
 				</Table.HeadCell>
 			</Table.Head>
 			<Table.Body className="divide-y">
-				{data.map((value) => (
+				{bookings.map((value) => (
 					<UserCurrentTableRow
 						data={value}
 						cancelBooking={cancelBooking}
@@ -75,6 +154,18 @@ function UserCurrentTable(props) {
 					/>
 				))}
 			</Table.Body>
+			<Table.Row
+				className={
+					bookings.length > 0
+						? "hidden"
+						: "bg-white dark:border-gray-700 dark:bg-gray-800"
+				}
+			>
+				<Table.Cell colSpan={3} className="min-w-[33rem]">
+					No current bookings.
+				</Table.Cell>
+				<Table.Cell colSpan={2} className="min-w-[24rem]"></Table.Cell>
+			</Table.Row>
 		</Table>
 	);
 }
