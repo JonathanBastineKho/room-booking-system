@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required
 from functools import wraps
 from flask_jwt_extended import verify_jwt_in_request, get_jwt
 from sqlalchemy import or_, and_
-from datetime import datetime, timezone
+from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
 import ntpath
