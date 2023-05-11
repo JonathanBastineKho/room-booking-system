@@ -26,12 +26,12 @@ function SearchCard(props) {
 	const search_params = new createSearchParams({
 		roomName: filter.name,
 		dateTime: format(filter.date, "yyyy-MM-dd"),
-		capacity: [filter.cap_2, filter.cap_5, filter.cap_10, filter.cap_15, filter.cap_20]
+		cap_2: filter.cap_2,
+		cap_5: filter.cap_5,
+		cap_10: filter.cap_10,
+		cap_15: filter.cap_15,
+		cap_20: filter.cap_20
 	})
-
-	const searchRoom = () => {
-		console.log("ttest");
-	};
 
 	return (
 		<Card className={props.className}>
