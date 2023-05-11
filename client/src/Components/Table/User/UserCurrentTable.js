@@ -100,14 +100,14 @@ function UserCurrentTable(props) {
 		if (token) {
 			axios
 				.patch("/api/modify_bookings", {
-					data: {
 						roomName: name,
 						startDateTime: format(start, "yyyy-MM-dd HH"),
 						newStartDateTime: format(newStart, "yyyy-MM-dd HH"),
 						newEndDateTime: format(newEnd, "yyyy-MM-dd HH"),
 					},
+					{
 					headers: {
-						Authorization: `Bearer ${token}`,
+						"Authorization": `Bearer ${token}`,
 						"Content-Type": "application/json",
 					},
 				})
@@ -161,10 +161,10 @@ function UserCurrentTable(props) {
 						: "bg-white dark:border-gray-700 dark:bg-gray-800"
 				}
 			>
-				<Table.Cell colSpan={3} className="min-w-[33rem]">
+				<Table.Cell colSpan={3} className="w-[36rem]">
 					No current bookings.
 				</Table.Cell>
-				<Table.Cell colSpan={2} className="min-w-[24rem]"></Table.Cell>
+				<Table.Cell colSpan={2} className="w-[20rem]"></Table.Cell>
 			</Table.Row>
 		</Table>
 	);
