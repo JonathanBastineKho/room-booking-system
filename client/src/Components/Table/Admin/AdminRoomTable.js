@@ -1,7 +1,7 @@
 // Imported Libraries
 import axios from "axios";
 import { Table } from "flowbite-react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../Authentication/AuthContext";
 import { Spinner } from "flowbite-react";
 
@@ -14,7 +14,7 @@ function AdminRoomTable(props) {
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const getData = () => {
+    const getData = useCallback(() => {
         axios
             .get("/api/list_of_rooms", {
                 headers: {
@@ -28,8 +28,7 @@ function AdminRoomTable(props) {
             .catch((error) => {
                 console.log(error);
             });
-        console.log("getdata");
-    };
+    }, [token]);
 
     // Dummy approve -> change with APi
     const approveRoom = async (name) => {
@@ -50,7 +49,7 @@ function AdminRoomTable(props) {
 
     useEffect(() => {
         getData();
-    }, []);
+    }, [getData]);
 
     return (
         <div className="overflow-x-auto">
@@ -74,7 +73,7 @@ function AdminRoomTable(props) {
                             />
                         </div>
                     )}
-                    {!isLoading && data.length == 0 && <p>There is no room</p>}
+                    {!isLoading && data.length === 0 && <p>There is no room</p>}
                     {!isLoading &&
                         data.map((value, index) => (
                             <AdminRoomTableRow
