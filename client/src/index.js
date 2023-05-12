@@ -15,6 +15,7 @@ import TestPage from "./Pages/TestPage";
 import RegisterPage from "./Pages/RegisterPage";
 import StudentDashboard from "./Pages/StudentDashboard";
 import SearchResultPage from "./Pages/SearchResultPage";
+import StaffRoomsPage from "./Pages/StaffRoomsPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -61,6 +62,17 @@ root.render(
 						<PrivateRoute requiredRole="Student">
 							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
 							<SearchResultPage />
+						</PrivateRoute>
+					}
+				/>
+				{/* Staff Page Route */}
+				<Route
+					exact
+					path="/staff"
+					element={
+						<PrivateRoute requiredRole="Staff">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<StaffRoomsPage />
 						</PrivateRoute>
 					}
 				/>

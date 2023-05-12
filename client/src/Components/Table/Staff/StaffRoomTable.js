@@ -48,7 +48,7 @@ function StaffRoomTable(props) {
 	};
 
 	return (
-		<Table hoverable={props.hoverable}>
+		<Table hoverable={props.hoverable} className={props.className}>
 			<Table.Head>
 				<Table.HeadCell>Room name</Table.HeadCell>
 				<Table.HeadCell>Room type</Table.HeadCell>
