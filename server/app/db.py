@@ -9,7 +9,7 @@ class TypeOfRoom(Enum):
 class TypeOfUser(Enum):
     STUDENT = 'Student'
     STAFF = 'Staff'
-    ADMININSTRATOR = 'Administrator'
+    ADMINISTRATOR = 'Administrator'
 
 class User(db.Model):
     __tablename__ = "user"
