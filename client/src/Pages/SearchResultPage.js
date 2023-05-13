@@ -76,7 +76,6 @@ function SearchResultPage() {
 
 	// Dummy sort -> change with table library sorting/api
 	const sort = (key) => {
-		console.log(rooms);
 		setRooms(
 			rooms.sort((a, b) => {
 				let x = 0;
