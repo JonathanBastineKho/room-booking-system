@@ -1,33 +1,18 @@
 // Imported Libraries
 import { Accordion, Label, Select, ToggleSwitch } from "flowbite-react";
-import React, { useEffect, useState } from "react";
-import { format, setHours } from "date-fns";
+import React, { useContext, useEffect, useState } from "react";
 
 // Imported local dependencies
 import RangeSlider from "./RangeSlider";
 
 // Imported icons
 import { FaSortAmountDown, FaSortAmountUpAlt, FaFilter } from "react-icons/fa";
+import { AuthContext } from "../Authentication/AuthContext";
+import axios from "axios";
 
 export default function FilterSortAccordion(props) {
-	const [sortBy, setSortBy] = useState("name");
-	const [ascending, setAscending] = useState(true);
-	const [roomType, setRoomType] = useState("Show all");
-	const [price, setPrice] = useState({
-		min: 0,
-		max: 100,
-	});
-	const [capacity, setCapacity] = useState({
-		min: 0,
-		max: 20,
-	});
-
-	// For normalization issue we use 0-9 but we will add 9 to it so 9-18
-	const [time, setTime] = useState({
-		min: 0,
-		max: 9,
-	});
-
+	const { token } = useContext(AuthContext);
+	const [roomType, setRoomType] = useState([]);
 	const currencyFormat = new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: "USD",
@@ -35,39 +20,35 @@ export default function FilterSortAccordion(props) {
 
 	// Dummy get Room Type -> change with api
 	const getRoomTypesList = () => {
-		return ["Room Type A", "Room Type B", "Room Type C"];
+		if (token) {
+			axios
+				.get("/api/types_of_rooms", {
+					headers: { Authorization: `Bearer ${token}` },
+				})
+				.then((res) => {
+					setRoomType(res.data.typesOfRooms);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		}
 	};
-
-	// Dummy sort -> change with table library sorting/api
-	const sort = (key, order) => {
-		console.log(`${key}, ${order}`);
-	};
-
-	// Dummy filter -> change with table library filter/api
-	const filter = (rtype) => {
-		console.log(`${rtype}`);
-	};
-
 	useEffect(() => {
-		sort(sortBy, ascending);
-	}, [sortBy, ascending]);
-
-	useEffect(() => {
-		filter(roomType);
-	}, [roomType, price, capacity, time]);
+		getRoomTypesList();
+	}, []);
 
 	return (
 		<Accordion alwaysOpen={true} className="w-72">
 			<Accordion.Panel>
 				<Accordion.Title>
 					<div className="flex flex-row items-center">
-						{ascending ? (
+						{props.ascending ? (
 							<FaSortAmountUpAlt className="mr-3" />
 						) : (
 							<FaSortAmountDown className="mr-3" />
 						)}
 						<span className="font-bold mr-2">Sort by:</span>
-						{sortBy}
+						{props.sortBy}
 					</div>
 				</Accordion.Title>
 				<Accordion.Content>
@@ -80,7 +61,7 @@ export default function FilterSortAccordion(props) {
 								id="sortby"
 								required={true}
 								onChange={(ev) => {
-									setSortBy(ev.currentTarget.value);
+									props.setSortBy(ev.currentTarget.value);
 								}}
 							>
 								<option default value={"name"}>
@@ -98,18 +79,18 @@ export default function FilterSortAccordion(props) {
 							<div id="order" className="flex flex-row items-center">
 								<div
 									className={`mr-3 ${
-										ascending ? "text-gray-500" : "text-white"
+										props.ascending ? "text-gray-500" : "text-white"
 									}`}
 								>
 									Descending
 								</div>
 								<ToggleSwitch
-									checked={ascending}
-									onChange={() => setAscending(!ascending)}
+									checked={props.ascending}
+									onChange={() => props.setAscending(!props.ascending)}
 								/>
 								<div
 									className={`mr-3 ${
-										ascending ? "text-white" : "text-gray-500"
+										props.ascending ? "text-white" : "text-gray-500"
 									}`}
 								>
 									Ascending
@@ -136,12 +117,14 @@ export default function FilterSortAccordion(props) {
 								id="roomtype"
 								required={true}
 								onChange={(ev) => {
-									setRoomType(ev.currentTarget.value);
+									props.setRoomType(ev.currentTarget.value);
 								}}
 							>
 								<option value="Showing All">Showing All</option>
-								{getRoomTypesList().map((value) => (
-									<option value={value}>{value}</option>
+								{roomType.map((value) => (
+									<option key={value} value={value}>
+										{value}
+									</option>
 								))}
 							</Select>
 						</div>
@@ -150,13 +133,15 @@ export default function FilterSortAccordion(props) {
 								<Label
 									htmlFor="sortby"
 									value={`Price Range: 
-									${currencyFormat.format(price.min)} - ${currencyFormat.format(price.max)}`}
+									${currencyFormat.format(props.price.min)} - ${currencyFormat.format(
+										props.price.max
+									)}`}
 								/>
 							</div>
 							<div className="w-full">
 								<RangeSlider
-									data={price}
-									setData={setPrice}
+									data={props.price}
+									setData={(val) => props.setPrice(val)}
 									min={0}
 									max={100}
 									step={5}
@@ -168,37 +153,16 @@ export default function FilterSortAccordion(props) {
 								<Label
 									htmlFor="sortby"
 									value={`Capacity: 
-									${capacity.min} pax - ${capacity.max} pax`}
+									${props.capacity.min} pax - ${props.capacity.max} pax`}
 								/>
 							</div>
 							<div className="w-full">
 								<RangeSlider
-									data={capacity}
-									setData={setCapacity}
+									data={props.capacity}
+									setData={(val) => props.setCapacity(val)}
 									min={0}
 									max={20}
 									step={2}
-								/>
-							</div>
-						</div>
-						<div>
-							<div className="mb-2 block">
-								<Label
-									htmlFor="sortby"
-									value={`Available Time: 
-									${format(setHours(new Date(), time.min + 9), "h:00aaa")} - ${format(
-										setHours(new Date(), time.max + 9),
-										"h:00aaa"
-									)}`}
-								/>
-							</div>
-							<div className="w-full">
-								<RangeSlider
-									data={time}
-									setData={setTime}
-									min={0}
-									max={9}
-									step={1}
 								/>
 							</div>
 						</div>
