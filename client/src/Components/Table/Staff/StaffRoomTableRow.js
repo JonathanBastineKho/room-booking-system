@@ -1,13 +1,15 @@
 // Imported libraries
 import { format } from "date-fns";
 import { Button, Table } from "flowbite-react";
-import React from "react";
+import React, { useState } from "react";
 
 // Imported icons
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { MdOutlineRocketLaunch } from "react-icons/md";
+import StaffModifyRoomModal from "../../Modal/StaffModifyRoomModal";
 
 function StaffRoomTableRow(props) {
+	const [modalShow, setModalShow] = useState(false);
 	const currencyFormat = new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: "USD",
@@ -20,8 +22,11 @@ function StaffRoomTableRow(props) {
 			</Table.Cell>
 			<Table.Cell>{props.data.type}</Table.Cell>
 			<Table.Cell>{currencyFormat.format(props.data.price)}</Table.Cell>
+			<Table.Cell>{props.data.capacity + " pax"}</Table.Cell>
 			<Table.Cell>
-				<p className="w-80 max-h-16 overflow-y-auto">{props.data.description}</p>
+				<p className="w-80 max-h-16 overflow-y-auto">
+					{props.data.description}
+				</p>
 			</Table.Cell>
 			<Table.Cell>
 				{props.data.launched.is ? (
@@ -41,7 +46,8 @@ function StaffRoomTableRow(props) {
 				<Button
 					size="xs"
 					className="w-24 py-1"
-					onClick={() => props.editRoom(props.data.name)}
+					onClick={() => setModalShow(true)}
+					disabled={props.data.launched.is}
 				>
 					<FaEdit className="h-4 w-4 mr-2" />
 					Edit
@@ -58,6 +64,11 @@ function StaffRoomTableRow(props) {
 					Delete
 				</Button>
 			</Table.Cell>
+			<StaffModifyRoomModal
+				show={modalShow}
+				onClose={() => setModalShow(false)}
+				data={props.data}
+			/>
 		</Table.Row>
 	);
 }

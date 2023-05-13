@@ -9,7 +9,7 @@ class TypeOfRoom(Enum):
 class TypeOfUser(Enum):
     STUDENT = 'Student'
     STAFF = 'Staff'
-    ADMININSTRATOR = 'Administrator'
+    ADMINISTRATOR = 'Administrator'
 
 class User(db.Model):
     __tablename__ = "user"
@@ -34,9 +34,9 @@ class Room(db.Model):
     capacity = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(10000), nullable=False)
     isLaunched = db.Column(db.Boolean, default=False, nullable=False)
-    launchDateTime = db.Column(db.DateTime, nullable=False)
+    launchDateTime = db.Column(db.DateTime, nullable=True, default=None)
     isApproved = db.Column(db.Boolean, default=False, nullable=False)
-    approvedDateTime = db.Column(db.DateTime, nullable=False)
+    approvedDateTime = db.Column(db.DateTime, nullable=True, default=None)
     
     bookingRoomRel = db.relationship("Booking", back_populates='roomBookingRel')
     approvedByRel = db.relationship("User", back_populates="roomApprovedRel", foreign_keys="Room.approvedByUsername")
@@ -48,11 +48,11 @@ class Room(db.Model):
     
 class Booking(db.Model):
     __tablename__ = 'booking'
-    
     startDateTime = db.Column(db.DateTime, primary_key=True)
     roomBookingRel = db.relationship("Room", back_populates='bookingRoomRel')
     roomName = db.Column(db.String(250), db.ForeignKey('room.name'), primary_key=True)
     endDateTime = db.Column(db.DateTime, nullable=False)
+    bookingPrice = db.Column(db.Float, nullable=False)
     bookedByRel = db.relationship("User", back_populates="userBookingRel")
     userId = db.Column(db.String(250), db.ForeignKey('user.username'))
 

@@ -11,18 +11,24 @@ function UserPastTableRow(props) {
 
 	return (
 		<Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-			<Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+			<Table.Cell className="w-[12rem] whitespace-nowrap font-medium text-gray-900 dark:text-white">
 				{props.data.name}
 			</Table.Cell>
-			<Table.Cell>{format(props.data.start, "d MMMM yyyy")}</Table.Cell>
-			<Table.Cell>{`${format(props.data.start, "h:00aaa")} - ${format(
-				props.data.end,
-				"h:00aaa"
-			)}`}</Table.Cell>
-			<Table.Cell className="w-36">
+			<Table.Cell className="w-[12rem]">
+				{format(props.data.start, "d MMMM yyyy")}
+			</Table.Cell>
+			<Table.Cell className="w-[12rem]">
+				{`${format(props.data.start, "h:00aaa")} - ${format(
+					props.data.end,
+					"h:00aaa"
+				)}`}
+			</Table.Cell>
+			<Table.Cell className="w-[10rem]">
 				{getHours(props.data.end) - getHours(props.data.start)} hours
 			</Table.Cell>
-			<Table.Cell className="w-36">{currencyFormat.format(props.data.fee)}</Table.Cell>
+			<Table.Cell className="w-[10rem]">
+				{currencyFormat.format(props.data.fee)}
+			</Table.Cell>
 		</Table.Row>
 	);
 }

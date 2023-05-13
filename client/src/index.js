@@ -13,36 +13,85 @@ import NavigationBar from "./Components/NavBar/NavigationBar";
 import LoginPage from "./Pages/LoginPage";
 import TestPage from "./Pages/TestPage";
 import RegisterPage from "./Pages/RegisterPage";
+import StudentDashboard from "./Pages/StudentDashboard";
+import SearchResultPage from "./Pages/SearchResultPage";
+import AdminTransactionPage from "./Pages/AdminTransactionPage";
+import AdminRoomPage from "./Pages/AdminRoomPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-    // <React.StrictMode>
-    <AuthProvider>
-        <BrowserRouter>
-            {/* Routes */}
-            <Routes>
-                {/* Login Page Route */}
-                <Route exact path="/test" element={<TestPage />} />
-                <Route exact path="/login" element={<UnAuthenticatedRoute><LoginPage /></UnAuthenticatedRoute>} />
-                <Route exact path="/register" element={<UnAuthenticatedRoute><RegisterPage /></UnAuthenticatedRoute>} />
-                {/* Register Page Route */}
+	// <React.StrictMode>
+	<AuthProvider>
+		<BrowserRouter>
+			{/* Routes */}
+			<Routes>
+				{/* Login Page Route */}
+				<Route
+					exact
+					path="/login"
+					element={
+						<UnAuthenticatedRoute>
+							<LoginPage />
+						</UnAuthenticatedRoute>
+					}
+				/>
+				{/* Register Page Route */}
+				<Route
+					exact
+					path="/register"
+					element={
+						<UnAuthenticatedRoute>
+							<RegisterPage />
+						</UnAuthenticatedRoute>
+					}
+				/>
 
-                {/* Other routes */}
-                <Route
-                    path="/"
-                    element={
-                        <PrivateRoute requiredRole="Student">
-                            <NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
-                            <TestPage />
-                        </PrivateRoute>
-                    }
-                />
-            </Routes>
-        </BrowserRouter>
-    </AuthProvider>
+				{/* Student Routes */}
+				<Route
+					path="/"
+					element={
+						<PrivateRoute requiredRole="Student">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<StudentDashboard />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/search"
+					element={
+						<PrivateRoute requiredRole="Student">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<SearchResultPage />
+						</PrivateRoute>
+					}
+				/>
+				{/* Admin Routes */}
+				<Route
+					path="/administrator"
+					element={
+						<PrivateRoute requiredRole="Administrator">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<AdminTransactionPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/administrator/rooms"
+					element={
+						<PrivateRoute requiredRole="Administrator">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<AdminRoomPage />
+						</PrivateRoute>
+					}
+				/>
+				{/* Other routes */}
+				<Route exact path="/test" element={<TestPage />} />
+			</Routes>
+		</BrowserRouter>
+	</AuthProvider>
 
-    // </React.StrictMode>
+	// </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

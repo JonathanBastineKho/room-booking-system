@@ -1,3 +1,4 @@
 .DS_Store
 instance/
 __pycache__/
+/server/venv/

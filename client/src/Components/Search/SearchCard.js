@@ -1,6 +1,7 @@
 // Imported Libraries
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Card, Label, TextInput, Button } from "flowbite-react";
+import { Link, createSearchParams, redirect } from "react-router-dom";
 
 // Imported local dependencies
 import DatePicker from "./DatePicker";
@@ -8,8 +9,10 @@ import DatePicker from "./DatePicker";
 // Imported Icons
 import { AiOutlineSearch } from "react-icons/ai";
 import CapacityCheckbox from "./CapacityCheckbox";
+import { AuthContext } from "../Authentication/AuthContext";
+import { format } from "date-fns";
 
-function SearchCard() {
+function SearchCard(props) {
 	const [filter, setFilter] = useState({
 		name: "",
 		date: new Date(),
@@ -20,13 +23,19 @@ function SearchCard() {
 		cap_20: true,
 	});
 
-	const searchRoom = () => {
-		console.log(filter);
-	};
+	const search_params = new createSearchParams({
+		roomName: filter.name,
+		dateTime: format(filter.date, "yyyy-MM-dd"),
+		cap_2: filter.cap_2,
+		cap_5: filter.cap_5,
+		cap_10: filter.cap_10,
+		cap_15: filter.cap_15,
+		cap_20: filter.cap_20
+	})
 
 	return (
-		<Card>
-			<form className="flex flex-col gap-4">
+		<Card className={props.className}>
+			<form className={"flex flex-col gap-4 "}>
 				<div>
 					<div className="mb-2 block">
 						<Label htmlFor="name" value="Search Room Name" />
@@ -45,8 +54,8 @@ function SearchCard() {
 						}
 					/>
 				</div>
-				<div className="flex flex-row gap-10">
-					<div>
+				<div className="flex flex-row gap-10 w-full">
+					<div className="w-1/2">
 						<div className="mb-2 block">
 							<Label htmlFor="date" value="Select Date" />
 						</div>
@@ -56,19 +65,21 @@ function SearchCard() {
 							setData={setFilter}
 							update_key="date"
 							min_date={new Date()}
-							className="w-80"
+							className="w-full"
 						/>
 					</div>
-					<div>
+					<div className="w-1/2">
 						<div className="mb-2 block">
 							<Label htmlFor="capacity" value="Select Capacity (pax)" />
 						</div>
 						<CapacityCheckbox setData={setFilter} data={filter} />
 					</div>
 				</div>
-				<Button type="button" onClick={() => searchRoom()}>
-					Search Room
-				</Button>
+				<Link to={"/search?" + search_params}>
+					<Button type="button" className="w-full">
+						Search Room
+					</Button>
+				</Link>
 			</form>
 		</Card>
 	);
