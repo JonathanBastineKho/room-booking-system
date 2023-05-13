@@ -26,7 +26,7 @@ def roles_required(*roles):
             claims = get_jwt()
 
             # Check if the role sufficient enough
-            if set(roles).intersection(set(claims.get('user_type', []))):
+            if claims.get('user_type') not in set(roles):
                 return {'message' : 'Insufficient permission'}
 
             return fn(*args, **kwargs)
@@ -156,7 +156,6 @@ def search():
     else:
         room_sql_list = Room.query.filter(and_(
             Room.name.like(f"%{userRoomName}%"), 
-            Room.capacity.in_(capacity_list),
             Room.capacity.in_(capacity_list), 
             Room.isLaunched == True, 
             Room.isApproved == True)).all()
@@ -276,7 +275,7 @@ def modify_booking():
                 and_(Booking.endDateTime > newStartDateTime, Booking.endDateTime <= newEndDateTime)
             )
         ).first()
-            if clashed_bookings != None:
+            if clashed_bookings != None or (clashed_bookings.roomName != roomName and clashed_bookings.startDate != currStartDateTime):
                 return {"success": False, "message": "The inputted time clashes with another booking time"}
             
             #if program ends up here, no interfering bookings
@@ -318,7 +317,13 @@ def get_scheduled_bookings():
 @jwt_required()
 @roles_required('Student') #Administrator, Staff, Student
 def get_type_of_rooms():
-    return {"typesOfRooms": [room.value for room in TypeOfRoom]}
+    #return {"typesOfRooms": [room.value for room in TypeOfRoom]}
+    type_sql_list = db.session.query(Room.roomType).distinct().all()
+    list_of_room_types = [item[0].value for item in type_sql_list]
+    print(list_of_room_types)
+    return {"type of rooms": list_of_room_types}
+
+    
 
 @app.route("/api/create_booking", methods=['POST'])
 @jwt_required()
@@ -370,6 +375,7 @@ def create_booking():
 
 @app.route("/api/create_room", methods=['POST'])
 @jwt_required()
+@roles_required('Staff')
 def create_room():
     room_name = request.form.get('roomName')
     if Room.query.filter_by(name = room_name).one_or_none():
@@ -678,7 +684,7 @@ def register_admin():
     new_user = User(
         username=username,
         email=email,
-        userType=TypeOfUser.ADMININSTRATOR,
+        userType=TypeOfUser.ADMINISTRATOR,
         password=bcrypt.generate_password_hash(password)
     )
     with app.app_context():
@@ -702,9 +708,9 @@ def view_bookings_admin():
 
     booking_list = []
 
-    booking_sql_list = Booking.query.filter(Booking.startDateTime.between(startDateTime, endDateTime))
+    booking_sql_list = Booking.query.filter(Booking.startDateTime.between(startDateTime, endDateTime)).order_by(Booking.startDateTime.desc())
 
     for booking in booking_sql_list:
-        booking_list.append({"roomName": booking.roomName, "startTime": booking.startDateTime, "endTime": booking.endDateTime})
+        booking_list.append({"roomName": booking.roomName, "userId": booking.userId, "startTime": str(booking.startDateTime.replace(tzinfo=None)), "endTime": str(booking.endDateTime.replace(tzinfo=None)),  "bookingPrice": str(booking.bookingPrice)})
     
     return {"bookings": booking_list}

@@ -62,7 +62,7 @@ function NavigationBar(props) {
                 ) : (
                     <Navbar.Collapse>
                         <NavigationLink target="/">Dashboard</NavigationLink>
-                        <NavigationLink target="/admin/rooms">
+                        <NavigationLink target="/administrator/rooms">
                             Rooms
                         </NavigationLink>
                     </Navbar.Collapse>

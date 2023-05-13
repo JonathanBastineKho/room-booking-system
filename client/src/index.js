@@ -16,6 +16,8 @@ import RegisterPage from "./Pages/RegisterPage";
 import StudentDashboard from "./Pages/StudentDashboard";
 import SearchResultPage from "./Pages/SearchResultPage";
 import StaffRoomsPage from "./Pages/StaffRoomsPage";
+import AdminTransactionPage from "./Pages/AdminTransactionPage";
+import AdminRoomPage from "./Pages/AdminRoomPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -73,6 +75,25 @@ root.render(
 						<PrivateRoute requiredRole="Staff">
 							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
 							<StaffRoomsPage />
+						</PrivateRoute>
+					}
+				/>
+				{/* Admin Routes */}
+				<Route
+					path="/administrator"
+					element={
+						<PrivateRoute requiredRole="Administrator">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<AdminTransactionPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/administrator/rooms"
+					element={
+						<PrivateRoute requiredRole="Administrator">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<AdminRoomPage />
 						</PrivateRoute>
 					}
 				/>
