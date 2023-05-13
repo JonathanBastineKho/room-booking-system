@@ -1,7 +1,46 @@
 import React from "react";
 import { Card, Footer } from "flowbite-react";
+import { format, setHours } from "date-fns";
 
 export function BookingSummaryCard() {
+  const booking = {
+    name : "Backrooms",
+    desc : "A private meeting room located at SIM HQ Blk B",
+    startDateTime: new Date("April 20, 2023 09:00:00"),
+    endDateTime:  new Date("April 20, 2023 12:00:00"),
+    capacity : 10, 
+    pricePerHours : 5
+  }
+
+  const moneySyntax = (money) => {
+    const formattedValue = `$${money.toFixed(2)}`;
+    return formattedValue;
+  };
+
+  const timeSyntax = (dateObject) =>{ // this const is not used 
+    let h = addZero(dateObject.getHours());
+    let m = addZero(dateObject.getMinutes());
+    let time = h + ":" + m;
+    return (time)
+  }
+
+  const dateSyntax = (dateObject) => {
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  
+    const dayOfWeek = daysOfWeek[dateObject.getDay()];
+    const dayOfMonth = dateObject.getDate();
+    const month = months[dateObject.getMonth()];
+    const year = dateObject.getFullYear();
+  
+    return `${dayOfWeek}, ${dayOfMonth} ${month} ${year}`;
+  };
+
+  function addZero(i) {
+    if (i < 10) {i = "0" + i}
+    return i;
+  }
+
   return (
     <div className="">
       <Card href="#" className="w-96 h-1/4  rounded ">
@@ -17,24 +56,27 @@ export function BookingSummaryCard() {
             ></img>
           </div>
           <span className="font-bold text-2xl text-white text-center">
-            {"The Backrooms"}
+            The + {booking.name}
           </span>
           <span className="text-gray text-xs text-zinc-400 font-bold text-center align-middle px-2">
-            {"A private meeting room located at SIM HQ Blk B"}
+            {booking.desc}
           </span>
         </div>
         <div className="flex flex-col gap-1 font-bold border-t-2 border-white pt-4 ">
           <div className="flex w-full justify-between">
-            <span className="text-white">Date </span> <span className="text-zinc-400">{"Thursday, 20 April 2023"}</span>
+            <span className="text-white">Date </span> <span className="text-zinc-400">{dateSyntax(booking.startDateTime)}</span>
           </div>
           <div className="flex flex-row w-full justify-between">
-            <span className="text-white">Time </span> <span className="text-zinc-400">{"09:00 AM - 12:00 PM"} </span>
+            <span className="text-white">Time </span> 
+            <span className="text-zinc-400">            
+              {format(setHours(new Date(), booking.startDateTime.getHours()), "h:00aaa")} to {format(setHours(new Date(), booking.endDateTime.getHours()), "h:00aaa")}
+            </span>
           </div>
           <div className="flex flex-row w-full justify-between">
-          <span className="text-white">Capacity </span> <span  className="text-zinc-400">{"10 pax"} </span>
+          <span className="text-white">Capacity </span> <span  className="text-zinc-400">{booking.capacity} pax</span>
           </div>
           <div className="flex flex-row w-full justify-between">
-          <span className="text-white">Pricing </span> <span className="text-zinc-400">{"$5/hour"}</span>
+          <span className="text-white">Pricing </span> <span className="text-zinc-400">{moneySyntax(booking.pricePerHours)} / hours</span>
           </div>
         </div>
       </Card>

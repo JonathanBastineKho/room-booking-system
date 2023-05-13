@@ -23,14 +23,23 @@ export function SuccessfulPaymentCard() {
     return i;
   }
 
- 
-  const dateSyntax = (props) => {
-    return (String(props.getDate()) + " " + month[props.getMonth()] + " " + String(props.getFullYear()))
-  }
+  const dateSyntax = (dateObject) => {
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  
+    const dayOfWeek = daysOfWeek[dateObject.getDay()];
+    const dayOfMonth = dateObject.getDate();
+    const month = months[dateObject.getMonth()];
+    const year = dateObject.getFullYear();
+  
+    return `${dayOfWeek}, ${dayOfMonth} ${month} ${year}`;
+  };
 
-  const timeSyntax = (props) =>{
-    let h = addZero(props.getHours());
-    let m = addZero(props.getMinutes());
+
+ 
+  const timeSyntax = (dateObject) =>{ // this const is not used 
+    let h = addZero(dateObject.getHours());
+    let m = addZero(dateObject.getMinutes());
     let time = h + ":" + m;
     return (time)
   }
@@ -51,7 +60,8 @@ export function SuccessfulPaymentCard() {
             <span>{dateSyntax(booking.startDateTime)} </span>
           </div>
           <div>
-            <span>{format(setHours(new Date(), booking.startDateTime.getHours()), "h:00 aaa")} to {format(setHours(new Date(), booking.endDateTime.getHours()), "h:00 aaa")}
+            <span>
+              {format(setHours(new Date(), booking.startDateTime.getHours()), "h:00 aaa")} to {format(setHours(new Date(), booking.endDateTime.getHours()), "h:00 aaa")}
             </span>
            
           </div>
