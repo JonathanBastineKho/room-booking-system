@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.4.0",
     "chart.js": "^4.3.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^2.29.3",
     "flowbite": "^1.6.5",
     "flowbite-react": "^0.4.4",

@@ -12,15 +12,15 @@ function AdminTransactionTableRow(props) {
 	return (
 		<Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
 			<Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-				{props.data.room}
+				{props.data.roomName}
 			</Table.Cell>
-			<Table.Cell>{props.data.user}</Table.Cell>
-			<Table.Cell>{format(props.data.start, "d MMMM yyyy")}</Table.Cell>
-			<Table.Cell>{`${format(props.data.start, "h:00aaa")} - ${format(
-				props.data.end,
+			<Table.Cell>{props.data.userId}</Table.Cell>
+			<Table.Cell>{format(new Date(props.data.startTime), "d MMMM yyyy")}</Table.Cell>
+			<Table.Cell>{`${format(new Date(props.data.startTime), "h:00aaa")} - ${format(
+				new Date(props.data.endTime),
 				"h:00aaa"
 			)}`}</Table.Cell>
-			<Table.Cell>{currencyFormat.format(props.data.fee)}</Table.Cell>
+			<Table.Cell>{currencyFormat.format(props.data.bookingPrice)}</Table.Cell>
 		</Table.Row>
 	);
 }

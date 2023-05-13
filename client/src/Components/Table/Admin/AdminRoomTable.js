@@ -65,15 +65,31 @@ function AdminRoomTable(props) {
                     </Table.HeadCell>
                 </Table.Head>
                 <Table.Body className="divide-y">
-                    {isLoading && (
-                        <div className="my-8">
+                    {isLoading &&
+                        <Table.Row className="h-20 bg-gray-800">
+                        <Table.Cell
+                            colSpan={6}
+                            className="w-full text-center"
+                        >
                             <Spinner
                                 size="xl"
                                 aria-label="Center-aligned spinner example"
                             />
-                        </div>
+                        </Table.Cell>
+                    </Table.Row>
+                    }
+                    {!isLoading && data.length === 0 && (
+                        <Table.Row className="h-20 bg-gray-800">
+                            <Table.Cell
+                                colSpan={6}
+                                className="w-full text-center"
+                            >
+                                <span className="text-lg font-semibold">
+                                    There is no Room
+                                </span>
+                            </Table.Cell>
+                        </Table.Row>
                     )}
-                    {!isLoading && data.length === 0 && <p>There is no room</p>}
                     {!isLoading &&
                         data.map((value, index) => (
                             <AdminRoomTableRow
