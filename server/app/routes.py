@@ -292,21 +292,21 @@ def modify_booking():
 #Room union Booking 
 # any records from booking will have a status of booked
 # any records from Room not in booking will have a status of vacant
-@app.route("/api/schedule", methods=['GET'])
+@app.route("/api/room_details", methods=['GET'])
 @jwt_required()
 @roles_required('Student')
 def get_scheduled_bookings():
     dateString = request.args.get('dateTime')
     user = get_jwt().get('sub')
 
-    list_of_schedules = {}
+    room_list = []
 
     list_of_rooms = Room.query.filter(and_(Room.isLaunched == True, Room.isApproved == True)).all()
     for room in list_of_rooms:
         booking_slots = get_booking_slots(room_name=room.name, date=dateString, user=user)
-        list_of_schedules[room.name] = booking_slots
+        room_list.append({"roomName": room.name, "roomDescription": room.description, "roomType": room.roomType.value, "price": room.price, "bookingSlots": booking_slots})
 
-    return list_of_schedules
+    return {"rooms": room_list}
 
 #get distinct type of rooms
 #get rooms not booked (rooms not in the Booking table), get their distinct roomType
