@@ -26,7 +26,7 @@ export default function FilterSortAccordion(props) {
 					headers: { Authorization: `Bearer ${token}` },
 				})
 				.then((res) => {
-					setRoomType(res.data.typesOfRooms);
+					setRoomType(res.data.type_of_rooms);
 				})
 				.catch((error) => {
 					console.log(error);

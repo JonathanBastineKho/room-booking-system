@@ -321,7 +321,7 @@ def get_type_of_rooms():
     type_sql_list = db.session.query(Room.roomType).distinct().all()
     list_of_room_types = [item[0].value for item in type_sql_list]
     print(list_of_room_types)
-    return {"type of rooms": list_of_room_types}
+    return {"type_of_rooms": list_of_room_types}
 
     
 
