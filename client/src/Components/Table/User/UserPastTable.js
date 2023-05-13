@@ -4,32 +4,10 @@ import React, { useContext, useEffect, useState } from "react";
 
 // Imported local dependencies
 import UserPastTableRow from "./UserPastTableRow";
-import { setHours } from "date-fns";
 import axios from "axios";
 import { AuthContext } from "../../Authentication/AuthContext";
 
 function UserPastTable(props) {
-	// Dummy data -> change with props.data which will be extracted from API.
-	// const data = [
-	// 	{
-	// 		name: "Room 1",
-	// 		start: setHours(new Date(), 9),
-	// 		end: setHours(new Date(), 10),
-	// 		fee: 20,
-	// 	},
-	// 	{
-	// 		name: "Room 2",
-	// 		start: setHours(new Date(), 12),
-	// 		end: setHours(new Date(), 13),
-	// 		fee: 20,
-	// 	},
-	// 	{
-	// 		name: "Room 3",
-	// 		start: setHours(new Date(), 15),
-	// 		end: setHours(new Date(), 17),
-	// 		fee: 40,
-	// 	},
-	// ];
 	const [bookings, setBookings] = useState([]);
 	const { token, logout } = useContext(AuthContext);
 
@@ -46,8 +24,7 @@ function UserPastTable(props) {
 				.then((res) => {
 					const temp = [];
 					// console.log(res.data.bookings)
-					res.data.bookings.map((rows) => {
-						console.log(rows.startDateTime);
+					res.data.bookings.forEach((rows) => {
 						let temp_dict = {
 							name: rows.roomName,
 							start: new Date(rows.startDateTime),
@@ -76,7 +53,7 @@ function UserPastTable(props) {
 			</Table.Head>
 			<Table.Body className="divide-y">
 				{bookings.map((value) => (
-					<UserPastTableRow data={value} />
+					<UserPastTableRow key={(value.name, value.start)} data={value} />
 				))}
 				<Table.Row
 					className={

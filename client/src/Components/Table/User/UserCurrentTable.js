@@ -1,35 +1,14 @@
 // Imported Libraries
-import { Button, Modal, Table } from "flowbite-react";
+import { Table } from "flowbite-react";
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { format, setHours, setMonth } from "date-fns";
-
-// Imported icons
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { format } from "date-fns";
 
 // Imported local dependencies
 import UserCurrentTableRow from "./UserCurrentTableRow";
 import { AuthContext } from "../../Authentication/AuthContext";
 
 function UserCurrentTable(props) {
-	// Dummy data -> change with props.data which will be extracted from API.
-	// const data = [
-	// 	{
-	// 		name: "Room 1",
-	// 		start: setHours(new Date(), 9),
-	// 		end: setHours(new Date(), 10),
-	// 	},
-	// 	{
-	// 		name: "Room 2",
-	// 		start: setMonth(setHours(new Date(), 12), 11),
-	// 		end: setHours(new Date(), 13),
-	// 	},
-	// 	{
-	// 		name: "Room 3",
-	// 		start: setHours(new Date(), 15),
-	// 		end: setHours(new Date(), 17),
-	// 	},
-	// ];
 	const { token, logout } = useContext(AuthContext);
 	const [bookings, setBookings] = useState([]);
 
@@ -46,8 +25,7 @@ function UserCurrentTable(props) {
 				.then((res) => {
 					const temp = [];
 					// console.log(res.data.bookings)
-					res.data.bookings.map((rows) => {
-						console.log(rows.startDateTime);
+					res.data.bookings.forEach((rows) => {
 						let temp_dict = {
 							name: rows.roomName,
 							start: new Date(rows.startDateTime.replace(" GMT", "")),
@@ -99,18 +77,21 @@ function UserCurrentTable(props) {
 		console.log(token);
 		if (token) {
 			axios
-				.patch("/api/modify_bookings", {
+				.patch(
+					"/api/modify_bookings",
+					{
 						roomName: name,
 						startDateTime: format(start, "yyyy-MM-dd HH"),
 						newStartDateTime: format(newStart, "yyyy-MM-dd HH"),
 						newEndDateTime: format(newEnd, "yyyy-MM-dd HH"),
 					},
 					{
-					headers: {
-						"Authorization": `Bearer ${token}`,
-						"Content-Type": "application/json",
-					},
-				})
+						headers: {
+							Authorization: `Bearer ${token}`,
+							"Content-Type": "application/json",
+						},
+					}
+				)
 				.then((res) => {
 					console.log(res.data.message);
 					if (res.data.success) {
@@ -148,24 +129,25 @@ function UserCurrentTable(props) {
 			<Table.Body className="divide-y">
 				{bookings.map((value) => (
 					<UserCurrentTableRow
+						key={(value.name, value.start)}
 						data={value}
 						cancelBooking={cancelBooking}
 						modifyBooking={modifyBooking}
 					/>
 				))}
+				<Table.Row
+					className={
+						bookings.length > 0
+							? "hidden"
+							: "bg-white dark:border-gray-700 dark:bg-gray-800"
+					}
+				>
+					<Table.Cell colSpan={3} className="w-[36rem]">
+						No current bookings.
+					</Table.Cell>
+					<Table.Cell colSpan={2} className="w-[20rem]"></Table.Cell>
+				</Table.Row>
 			</Table.Body>
-			<Table.Row
-				className={
-					bookings.length > 0
-						? "hidden"
-						: "bg-white dark:border-gray-700 dark:bg-gray-800"
-				}
-			>
-				<Table.Cell colSpan={3} className="w-[36rem]">
-					No current bookings.
-				</Table.Cell>
-				<Table.Cell colSpan={2} className="w-[20rem]"></Table.Cell>
-			</Table.Row>
 		</Table>
 	);
 }

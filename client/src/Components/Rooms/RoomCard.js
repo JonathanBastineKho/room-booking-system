@@ -1,57 +1,37 @@
 import React, { useState } from "react";
-import {
-  Card,
-  Label,
-  TextInput,
-  Checkbox,
-  Button,
-  Toast,
-} from "flowbite-react";
+import { Card, Button } from "flowbite-react";
+import RoomModal from "./RoomModal";
 
-function RoomCard() {
-  // assuming we get a roomName passed from
-  // component above
-  const getRoomJson = (roomName) => {
-    // get room object based on id
-    // TBD
-    // assume this is returned by api call
-    const roomJson = {
-      name: "The backrooms",
-      imgUrl:
-        "https://th.bing.com/th/id/OIP.mu-g99bDuvFB-YWfvGxY4QHaE6?pid=ImgDet&rs=1",
-      roomType: "Private Meeting Room",
-      price: 5,
-      capacity: 10,
-      description: "A private meeting room located at SIM HQ Blk B Level 1.",
-      isLaunched: "yes",
-      launchDateTime: "some datetime obj",
-      isApproved: "yes",
-      approvedDateTime: "some datetime obj",
-    };
-    return roomJson;
-  };
+function RoomCard(props) {
+	const [isOpen, setIsOpen] = useState(false);
 
-  const roomJson = getRoomJson("my roomName");
-
-  return (
-    <div className="max-w-sm">
-      <Card imgSrc={roomJson.imgUrl}>
-        <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          {roomJson.name}
-        </h5>
-        <p className="font-normal text-gray-700 dark:text-gray-400">
-          Type: {roomJson.roomType}
-          <br />
-          Capacity: {roomJson.capacity} pax
-          <br />
-          Pricing: ${roomJson.price}/hour
-        </p>
-        <Button>
-            Read more →
-        </Button>
-      </Card>
-    </div>
-  );
+	return (
+		<div>
+			<Card
+				imgSrc={`http://127.0.0.1:5000/api/get_room_image?roomName=${props.roomJson.name}`}
+				onClick={() => setIsOpen(true)}
+			>
+				<h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+					{props.roomJson.name}
+				</h5>
+				<p className="font-normal text-gray-700 dark:text-gray-400">
+					Type: {props.roomJson.roomType}
+					<br />
+					Capacity: {props.roomJson.capacity} pax
+					<br />
+					Pricing: ${props.roomJson.price}/hour
+				</p>
+				<Button onClick={() => setIsOpen(true)}>Read more →</Button>
+			</Card>
+			<RoomModal
+				roomJson={props.roomJson}
+				show={isOpen}
+				imageUrl={`http://127.0.0.1:5000/api/get_room_image?roomName=${props.roomJson.name}`}
+				onClose={() => setIsOpen(false)}
+				date={props.date}
+			/>
+		</div>
+	);
 }
 
 export default RoomCard;

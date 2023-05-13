@@ -146,6 +146,7 @@ export default function DatePicker(props) {
 							end: endOfMonth(subMonths(viewed, 1)),
 						}).map((date) => (
 							<DateButton
+								key={date}
 								className="text-gray-300"
 								date={date}
 								updateData={(val) => {
@@ -161,6 +162,7 @@ export default function DatePicker(props) {
 						end: endOfMonth(viewed),
 					}).map((date) => (
 						<DateButton
+							key={date}
 							date={date}
 							updateData={(val) => {
 								updateData(props.update_key, val);
@@ -180,6 +182,7 @@ export default function DatePicker(props) {
 							),
 						}).map((date) => (
 							<DateButton
+								key={date}
 								className="text-gray-300"
 								date={date}
 								updateData={(val) => {
