@@ -46,7 +46,7 @@ function StaffModifyRoomModal(props) {
 			formData.append("capacity", data.capacity);
 			formData.append("file", data.file);
 			// axios
-			// 	.post("/api/modify-room", formData, {
+			// 	.post("/api/modify_room", formData, {
 			// 		headers: {
 			// 			Authorization: `Bearer ${token}`,
 			// 			"Content-Type": "multipart/form-data",
@@ -56,7 +56,7 @@ function StaffModifyRoomModal(props) {
 			// 		if (res.data.success) {
 			// 			props.onClose();
 			// 		} else {
-			// 			alert("Failed to add room.");
+			// 			alert("Failed to modify room.");
 			// 		}
 			// 	})
 			// 	.catch((error) => {
@@ -72,7 +72,7 @@ function StaffModifyRoomModal(props) {
 		<Modal show={props.show} size="xl" popup={false} onClose={props.onClose}>
 			<div className="bg-gray-800 rounded-lg">
 				<Modal.Header>
-					<div className="font-bold text-3xl p-2 px-5 pb-0">Add Room</div>
+					<div className="font-bold text-3xl p-2 px-5 pb-0">Modify Room</div>
 				</Modal.Header>
 				<Modal.Body>
 					<div className="flex flex-col gap-4 w-full t-3 px-3">
