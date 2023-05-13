@@ -15,7 +15,8 @@ function AdminTransactionPage() {
         endDate: new Date(),
     });
     const [roomSelection, setRoomSelection] = useState(["All rooms"]);
-    const [selectedRoom, setSelectedRoom] = useState("All rooms")
+    const [selectedRoom, setSelectedRoom] = useState("All rooms");
+    const display = selectedRoom === "All rooms" ? data : data.filter((item) => item.roomName === selectedRoom);
     useEffect(() => {
         const startDate = filter.startDate;
         const endDate = filter.endDate;
@@ -94,9 +95,9 @@ function AdminTransactionPage() {
                 </div>
             </div>
 
-            <AdminRoomChart />
+            <AdminRoomChart display={display} room={selectedRoom} />
             <p className="text-white text-4xl font-bold my-6">Transactions</p>
-            <AdminRoomTransactionTable data={data} selected_room={selectedRoom}/>
+            <AdminRoomTransactionTable display={display}/>
         </div>
     );
 }

@@ -6,12 +6,6 @@ import React, { useState } from "react";
 import AdminTransactionTableRow from "./AdminTransactionTableRow";
 
 function AdminTransactionTable(props) {
-    const display =
-        props.selected_room === "All rooms"
-            ? props.data
-            : props.data.filter(
-                  (item) => item.roomName === props.selected_room
-              );
     return (
         <div className="overflow-x-auto">
             <Table hoverable={props.hoverable}>
@@ -23,9 +17,23 @@ function AdminTransactionTable(props) {
                     <Table.HeadCell>Fee</Table.HeadCell>
                 </Table.Head>
                 <Table.Body className="divide-y">
-                    {display.map((value, index) => (
-                        <AdminTransactionTableRow data={value} key={index} />
-                    ))}
+                    {props.display.length !== 0 &&
+                        props.display.map((value, index) => (
+                            <AdminTransactionTableRow
+                                data={value}
+                                key={index}
+                            />
+                        ))}
+                    {props.display.length === 0 && (
+                        <Table.Row className="h-20 bg-gray-800">
+                            <Table.Cell
+                                colSpan={5}
+                                className="w-full text-center"
+                            >
+                                <span className="text-lg font-semibold">There is no Transaction</span>
+                            </Table.Cell>
+                        </Table.Row>
+                    )}
                 </Table.Body>
             </Table>
         </div>
