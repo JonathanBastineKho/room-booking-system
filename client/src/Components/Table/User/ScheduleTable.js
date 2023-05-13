@@ -7,34 +7,12 @@ import ScheduleTableRow from "./ScheduleTableRow";
 import { format } from "date-fns";
 
 function ScheduleTable(props) {
-	// Dummy data -> change with props.data which will be extracted from API.
-	const data = [
-		{
-			name: "Room 1",
-			date: new Date(),
-			booking: [0, 1, 1, 0, 1, 2, 2, 1, 0],
-		},
-		{
-			name: "Room 2",
-			date: new Date(),
-			booking: [0, 0, 0, 0, 1, 2, 2, 1, 0],
-		},
-		{
-			name: "Room 3",
-			date: new Date(),
-			booking: [0, 1, 0, 0, 0, 2, 2, 1, 1],
-		},
-		{
-			name: "Room 4",
-			date: new Date(),
-			booking: [2, 0, 1, 1, 1, 1, 1, 1, 1],
-		},
-	];
-
 	// Dummy handleBook -> Change with props.handleBook which would open Modal
 	const handleBook = (name, date) => {
 		alert(`${name} and ${format(date, "d/MM/yyyy H")}`);
 	};
+
+	let counter = 0;
 
 	return (
 		<Table hoverable={props.hoverable} cellPadding="0">
@@ -74,9 +52,32 @@ function ScheduleTable(props) {
 				</th>
 			</Table.Head>
 			<Table.Body className="divide-y">
-				{data.map((value) => (
-					<ScheduleTableRow data={value} handleBook={handleBook} />
-				))}
+				{Object.keys(props.schedule).map((value) => {
+					if (props.filter(value)) {
+						counter++;
+						return (
+							<ScheduleTableRow
+								key={value}
+								data={{
+									name: value,
+									bookings: props.schedule[value],
+								}}
+								date={props.date}
+								handleBook={handleBook}
+							/>
+						);
+					}
+				})}
+				<Table.Row
+					className={`bg-white dark:border-gray-700 dark:bg-gray-800 ${
+						counter > 0 && "hidden"
+					}`}
+				>
+					<Table.Cell className="text-center" colSpan={10}>
+						No rooms found.
+					</Table.Cell>
+					<Table.Cell></Table.Cell>
+				</Table.Row>
 			</Table.Body>
 		</Table>
 	);
