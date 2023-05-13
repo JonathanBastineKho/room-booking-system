@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 function DropDownList(props) {
-    const [selection, setSelection] = useState(props.selection_list[0]);
     const [show, setShow] = useState(false);
     const [display, setDisplay] = useState(props.selection_list);
 
@@ -22,7 +21,7 @@ function DropDownList(props) {
                 type="button"
                 onClick={() => {setShow(!show); setDisplay(props.selection_list);}}
             >
-                {selection}
+                {props.selected_element}
                 <svg
                     className="w-4 h-4 ml-2"
                     aria-hidden="true"
@@ -68,7 +67,7 @@ function DropDownList(props) {
                                 type="text"
                                 id="input-group-search"
                                 className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="Search user"
+                                placeholder="Search"
                                 onChange={handleFilter}
                             />
                         </div>
@@ -79,7 +78,7 @@ function DropDownList(props) {
                     >
                         <li>
                             {display.map((value, index) => (
-                                <div onClick={() => {setSelection(value); setShow(!show);}} key={index} className="flex items-center pl-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                                <div onClick={() => {props.set_selected_element(value); setShow(!show);}} key={index} className="flex items-center pl-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
                                     <label
                                         htmlFor="checkbox-item-11"
                                         className="w-full py-2 ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"

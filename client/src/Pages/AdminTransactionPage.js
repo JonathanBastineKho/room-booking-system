@@ -1,17 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AdminRoomChart from "../Components/Table/Admin/AdminRoomChart";
 import AdminRoomTransactionTable from "../Components/Table/Admin/AdminTransactionTable";
 import DatePicker from "../Components/Search/DatePicker";
 import DropDownList from "../Components/Search/DropDownList";
 import { Label } from "flowbite-react";
+import axios from "axios";
+import { AuthContext } from "../Components/Authentication/AuthContext";
 
 function AdminTransactionPage() {
+    const { token } = useContext(AuthContext);
     const [data, setData] = useState([]);
     const [filter, setFilter] = useState({
         startDate: new Date(),
         endDate: new Date(),
     });
-    useEffect(() => {}, []);
+    const [roomSelection, setRoomSelection] = useState(["All rooms"]);
+    const [selectedRoom, setSelectedRoom] = useState("All rooms");
+    const display = selectedRoom === "All rooms" ? data : data.filter((item) => item.roomName === selectedRoom);
+    useEffect(() => {
+        const startDate = filter.startDate;
+        const endDate = filter.endDate;
+        axios.get(
+            "/api/view_bookings_admin",
+            {
+                params: {
+                    startDateTime: `${startDate.getFullYear()}-${(
+                        startDate.getMonth() + 1
+                    )
+                        .toString()
+                        .padStart(2, "0")}-${startDate
+                        .getDate()
+                        .toString()
+                        .padStart(2, "0")}`,
+                    endDateTime: `${endDate.getFullYear()}-${(
+                        endDate.getMonth() + 1
+                    )
+                        .toString()
+                        .padStart(2, "0")}-${endDate
+                        .getDate()
+                        .toString()
+                        .padStart(2, "0")}`,
+                },
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        )
+        .then((res) => {
+            setData(res.data.bookings);
+            setRoomSelection(["All rooms", ...new Set(res.data.bookings.map((booking) => booking.roomName))])
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }, [filter, token]);
     return (
         <div className="mt-12 mx-auto px-6 sm:px-8 md:px-10 lg:px-12 xl:max-w-[100rem]">
             <p className="text-white text-4xl font-bold my-5">Total Sales</p>
@@ -42,24 +86,18 @@ function AdminTransactionPage() {
                         />
                     </div>
                 </div>
-                <div >
+                <div>
                     <DropDownList
-                        selection_list={[
-                            "Room 1",
-                            "Room 2",
-                            "Room 3",
-                            "Room 4",
-                            "Room 1",
-                            "Room 1",
-                            "Room 1",
-                        ]}
+                        selection_list={roomSelection}
+                        selected_element={selectedRoom}
+                        set_selected_element={setSelectedRoom}
                     />
                 </div>
             </div>
 
-            <AdminRoomChart />
+            <AdminRoomChart display={display} room={selectedRoom} />
             <p className="text-white text-4xl font-bold my-6">Transactions</p>
-            <AdminRoomTransactionTable />
+            <AdminRoomTransactionTable display={display}/>
         </div>
     );
 }

@@ -711,6 +711,6 @@ def view_bookings_admin():
     booking_sql_list = Booking.query.filter(Booking.startDateTime.between(startDateTime, endDateTime)).order_by(Booking.startDateTime.desc())
 
     for booking in booking_sql_list:
-        booking_list.append({"roomName": booking.roomName, "userId": booking.userId, "startTime": str(booking.startDateTime.replace(tzinfo=None)), "endTime": str(booking.endDateTime.replace(tzinfo=None)),  "bookingPrice": str(booking.bookingPrice)})
+        booking_list.append({"roomName": booking.roomName, "userId": booking.userId, "startTime": str(booking.startDateTime.replace(tzinfo=None)), "endTime": str(booking.endDateTime.replace(tzinfo=None)),  "bookingPrice": booking.bookingPrice})
     
     return {"bookings": booking_list}
