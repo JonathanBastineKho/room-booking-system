@@ -7,6 +7,7 @@ import axios from "axios";
 import { AuthContext } from "../Authentication/AuthContext";
 import DatePicker from "../Search/DatePicker";
 import { format, isSameDay, setHours } from "date-fns";
+import StaffModifyPromoForm from "../Forms/StaffModifyPromoForm";
 
 function StaffModifyPromoModal(props) {
 	// {
@@ -92,121 +93,7 @@ function StaffModifyPromoModal(props) {
 					</div>
 				</Modal.Header>
 				<Modal.Body>
-					<div className="flex flex-col gap-4 w-full t-3 px-3">
-						<div className="flex flex-row justify-between gap-x-2">
-							<div className="flex flex-col w-1/2">
-								<div className="mb-2">
-									<Label htmlFor="promocode" value="Promo code" />
-								</div>
-								<TextInput
-									id="promocode"
-									placeholder="Enter promo code"
-									defaultValue={data.code}
-									required={true}
-									onBlur={(ev) => {
-										if (ev.target.value !== data.code) {
-											handleUpdate("code", ev.target.value);
-										}
-									}}
-								/>
-							</div>
-							<div className="flex flex-col w-1/2">
-								<div className="mb-2 block">
-									<Label
-										htmlFor="discount"
-										value="Discount (percentage)"
-									/>
-								</div>
-								<TextInput
-									id="discount"
-									placeholder="Enter discount 1-100"
-									required={true}
-									defaultValue={data.discount}
-									onBlur={(ev) => {
-										if (ev.target.value !== data.discount) {
-											handleUpdate("discount", ev.target.value);
-										}
-									}}
-								/>
-							</div>
-						</div>
-						<div className="flex flex-row justify-between gap-x-2">
-							<div className="flex flex-col w-1/2">
-								<div className="mb-2">
-									<Label htmlFor="date" value="Start date" />
-								</div>
-								<DatePicker
-									id="date"
-									data={data}
-									setData={setData}
-									update_key="startDate"
-									min_date={new Date()}
-									className=""
-								/>
-							</div>
-							<div className="flex flex-col w-1/2">
-								<div className="mb-2 block">
-									<Label htmlFor="starttime" value="Start time" />
-								</div>
-								<Select
-									id="starttime"
-									required={true}
-									onChange={(ev) => {
-										handleUpdate("startTime", ev.target.value);
-										handleUpdate("endTime", ev.target.value + 1);
-									}}
-									value={data.startTime}
-								>
-									<option value={9}>9:00am</option>
-									<option value={10}>10:00am</option>
-									<option value={11}>11:00am</option>
-									<option value={12}>12:00pm</option>
-									<option value={13}>1:00pm</option>
-									<option value={14}>2:00pm</option>
-									<option value={15}>3:00pm</option>
-									<option value={16}>4:00pm</option>
-									<option value={17}>5:00pm</option>
-								</Select>
-							</div>
-						</div>
-						<div className="flex flex-row justify-between gap-x-2">
-							<div className="flex flex-col w-1/2">
-								<div className="mb-2">
-									<Label htmlFor="enddate" value="End date" />
-								</div>
-								<DatePicker
-									id="enddate"
-									data={data}
-									setData={setData}
-									update_key="endDate"
-									min_date={data.startDate}
-									className=""
-								/>
-							</div>
-							<div className="flex flex-col w-1/2">
-								<div className="mb-2 block">
-									<Label htmlFor="endtime" value="End time" />
-								</div>
-								<Select
-									id="endtime"
-									required={true}
-									onChange={(ev) => {
-										handleUpdate("endTime", ev.target.value);
-									}}
-									value={data.endTime}
-								>
-									{endTimeSlots}
-								</Select>
-							</div>
-						</div>
-						<Button
-							className="mt-2 rounded-lg"
-							size={"lg"}
-							onClick={handleModify}
-						>
-							Modify Promo Code
-						</Button>
-					</div>
+					<StaffModifyPromoForm data={data} onClose={props.onClose} />
 				</Modal.Body>
 			</div>
 		</Modal>

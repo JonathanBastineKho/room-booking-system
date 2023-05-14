@@ -18,6 +18,8 @@ import SearchResultPage from "./Pages/SearchResultPage";
 import StaffRoomsPage from "./Pages/StaffRoomsPage";
 import AdminTransactionPage from "./Pages/AdminTransactionPage";
 import AdminRoomPage from "./Pages/AdminRoomPage";
+import StudentSchedulePage from "./Pages/StudentSchedulePage";
+import StaffPromosPage from "./Pages/StaffPromosPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -78,7 +80,7 @@ root.render(
 							</PrivateRoute>
 							}
 					/>
-					
+
 				<Route
 					path="/schedule"
 					element={
