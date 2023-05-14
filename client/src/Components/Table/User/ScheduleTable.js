@@ -52,15 +52,19 @@ function ScheduleTable(props) {
 				</th>
 			</Table.Head>
 			<Table.Body className="divide-y">
-				{Object.keys(props.schedule).map((value) => {
-					if (props.filter(value)) {
+				{props.schedule.map((value) => {
+					if (props.filter(value.roomName)) {
 						counter++;
 						return (
 							<ScheduleTableRow
-								key={value}
+								key={value.name}
 								data={{
-									name: value,
-									bookings: props.schedule[value],
+									name: value.roomName,
+									price: value.price,
+									description: value.roomDescription,
+									roomType: value.roomType,
+									bookings: value.bookingSlots,
+									capacity: 10
 								}}
 								date={props.date}
 								handleBook={handleBook}

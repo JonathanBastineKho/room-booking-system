@@ -13,10 +13,9 @@ function RoomModal(props) {
 	const [data, setData] = useState({
 		// default value is date passed from parent
 		date: props.date,
-		startTime: 0,
-		endTime: 0,
+		startTime: props.startTime ? props.startTime : 0,
+		endTime: props.startTime ? props.startTime : 0,
 	});
-
 	const handleUpdate = (key, value) => {
 		setData((prev) => ({ ...prev, [key]: value }));
 	};
@@ -34,6 +33,11 @@ function RoomModal(props) {
 	useEffect(() => {
 		handleUpdate("date", props.date);
 	}, [props.date]);
+
+	useEffect(() => {
+			handleUpdate("startTime", props.startTime);
+			handleUpdate("endTime", props.startTime);
+		}, [props.startTime]);
 
 	// API CALL
 	const getTimeSlots = () => {

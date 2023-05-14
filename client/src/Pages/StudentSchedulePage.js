@@ -45,11 +45,12 @@ function StudentSchedulePage() {
 	const getSchedule = () => {
 		if (token) {
 			axios
-				.get(`/api/schedule?dateTime=${format(date.date, "yyyy-MM-dd")}`, {
+				.get(`/api/room_details?dateTime=${format(date.date, "yyyy-MM-dd")}`, {
 					headers: { Authorization: `Bearer ${token}` },
 				})
 				.then((res) => {
-					setSchedule(res.data);
+					setSchedule(res.data.rooms);
+					console.log(token);
 				})
 				.catch((error) => {
 					console.log(error);
@@ -98,7 +99,7 @@ function StudentSchedulePage() {
 					Your Booking
 				</div>
 			</div>
-			<div className="w-11/12 max-w-[61rem] overflow-x-auto mx-5 my-3">
+			<div className="w-11/12 max-w-[61rem] overflow-auto mx-5 mt-3">
 				<ScheduleTable
 					date={date.date}
 					schedule={schedule}

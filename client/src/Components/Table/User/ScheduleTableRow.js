@@ -8,6 +8,7 @@ import RoomModal from "../../Rooms/RoomModal";
 
 function ScheduleTableRow(props) {
 	const [modalShow, setModalShow] = useState(false);
+	const [index, setIndex] = useState(0);
 
 	const cells = [];
 	for (let index = 0; index < 9; index++) {
@@ -24,7 +25,10 @@ function ScheduleTableRow(props) {
 					<button
 						type="button"
 						className={`w-full h-full ${value !== 0 && "hidden"}`}
-						onClick={() => setModalShow(true)}
+						onClick={() => {
+							setIndex(index);
+							setModalShow(true);
+						}}
 					/>
 				</div>
 			</td>
@@ -38,22 +42,12 @@ function ScheduleTableRow(props) {
 			{cells}
 			<Table.Cell></Table.Cell>
 			<RoomModal
-				roomJson={{
-					capacity: 10,
-					description: "new description",
-					name: props.data.name,
-					price: 20,
-					roomType: "Lecture Hall",
-					// capacity: props.data.capacity,
-					// description: props.data.description,
-					// name: props.data.name,
-					// price: props.data.price,
-					// roomType: props.data.type,
-				}}
+				roomJson={props.data}
 				show={modalShow}
 				imageUrl={`http://127.0.0.1:5000/api/get_room_image?roomName=${props.data.name}`}
 				onClose={() => setModalShow(false)}
 				date={props.date}
+				startTime={index}
 			/>
 		</Table.Row>
 	);
