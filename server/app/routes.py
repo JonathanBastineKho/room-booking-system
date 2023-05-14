@@ -497,8 +497,9 @@ def modify_room():
             description = request.form.get('description')
             newRoomName = request.form.get('newRoomName')
 
-            if (Room.query.filter(Room.name == newRoomName).one_or_none() != None):
-                return {"success": False, "message": "New room name specified already exists"}
+            if roomName != newRoomName:
+                if (Room.query.filter(Room.name == newRoomName).one_or_none() != None):
+                    return {"success": False, "message": "New room name specified already exists"}
             if 'file' not in request.files:
                 return {"success" : False, "message" : "No file part"}
             file = request.files['file']
@@ -700,6 +701,8 @@ def register_admin():
 # get room_schedule
 
 @app.route("/api/view_bookings_admin", methods=['GET'])
+@jwt_required()
+@roles_required('Administrator')
 def view_bookings_admin():
     startDateTimeString = request.args.get('startDateTime')
     endDateTimeString = request.args.get('endDateTime')
@@ -714,3 +717,16 @@ def view_bookings_admin():
         booking_list.append({"roomName": booking.roomName, "userId": booking.userId, "startTime": str(booking.startDateTime.replace(tzinfo=None)), "endTime": str(booking.endDateTime.replace(tzinfo=None)),  "bookingPrice": booking.bookingPrice})
     
     return {"bookings": booking_list}
+
+
+#return list of promos
+@app.route("/api/view_all_promocodes", methods=['GET'])
+@jwt_required()
+@roles_required('Staff')
+def view_promo_codes():
+    promocode_sql_list = PromoCode.query.all()
+    promocode_list = []
+    for code in promocode_sql_list:
+        promocode_list.append({"promoCode": code.promoCode, "startDate": code.startDate, "endDate": code.endDate, "discountPercentage": code.discountPercentage})
+    
+    return {"Promocodes": promocode_list}
