@@ -8,16 +8,14 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 function RoomModal(props) {
-	const { dateTime } = useContext(DateContext);
 	const { token } = useContext(AuthContext);
 	const [timeSlots, setTimeSlots] = useState([]);
 	const [data, setData] = useState({
 		// default value is date passed from parent
-		date: dateTime,
-		startTime: 0,
-		endTime: 0,
+		date: props.date,
+		startTime: props.startTime ? props.startTime : 0,
+		endTime: props.startTime ? props.startTime : 0,
 	});
-
 	const handleUpdate = (key, value) => {
 		setData((prev) => ({ ...prev, [key]: value }));
 	};
@@ -33,8 +31,13 @@ function RoomModal(props) {
 	}, [data.date]);
 
 	useEffect(() => {
-		handleUpdate("date", dateTime);
-	}, [dateTime]);
+		handleUpdate("date", props.date);
+	}, [props.date]);
+
+	useEffect(() => {
+			handleUpdate("startTime", props.startTime);
+			handleUpdate("endTime", props.startTime);
+		}, [props.startTime]);
 
 	// API CALL
 	const getTimeSlots = () => {
@@ -185,7 +188,8 @@ function RoomModal(props) {
 														key={index}
 														value={index}
 														disabled={
-															slot === 1 || time <= data.startTime
+															slot === 1 ||
+															time <= data.startTime
 														}
 													>
 														{timeString}

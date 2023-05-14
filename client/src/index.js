@@ -75,6 +75,16 @@ root.render(
 						<PrivateRoute requiredRole="Staff">
 							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
 							<StaffRoomsPage />
+							</PrivateRoute>
+							}
+					/>
+					
+				<Route
+					path="/schedule"
+					element={
+						<PrivateRoute requiredRole="Student">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<StudentSchedulePage />
 						</PrivateRoute>
 					}
 				/>

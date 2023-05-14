@@ -292,21 +292,21 @@ def modify_booking():
 #Room union Booking 
 # any records from booking will have a status of booked
 # any records from Room not in booking will have a status of vacant
-@app.route("/api/schedule", methods=['GET'])
+@app.route("/api/room_details", methods=['GET'])
 @jwt_required()
 @roles_required('Student')
 def get_scheduled_bookings():
     dateString = request.args.get('dateTime')
     user = get_jwt().get('sub')
 
-    list_of_schedules = {}
+    room_list = []
 
     list_of_rooms = Room.query.filter(and_(Room.isLaunched == True, Room.isApproved == True)).all()
     for room in list_of_rooms:
         booking_slots = get_booking_slots(room_name=room.name, date=dateString, user=user)
-        list_of_schedules[room.name] = booking_slots
+        room_list.append({"roomName": room.name, "roomDescription": room.description, "roomType": room.roomType.value, "price": room.price, "bookingSlots": booking_slots})
 
-    return list_of_schedules
+    return {"rooms": room_list}
 
 #get distinct type of rooms
 #get rooms not booked (rooms not in the Booking table), get their distinct roomType
@@ -497,8 +497,9 @@ def modify_room():
             description = request.form.get('description')
             newRoomName = request.form.get('newRoomName')
 
-            if (Room.query.filter(Room.name == newRoomName).one_or_none() != None):
-                return {"success": False, "message": "New room name specified already exists"}
+            if roomName != newRoomName:
+                if (Room.query.filter(Room.name == newRoomName).one_or_none() != None):
+                    return {"success": False, "message": "New room name specified already exists"}
             if 'file' not in request.files:
                 return {"success" : False, "message" : "No file part"}
             file = request.files['file']
@@ -700,6 +701,8 @@ def register_admin():
 # get room_schedule
 
 @app.route("/api/view_bookings_admin", methods=['GET'])
+@jwt_required()
+@roles_required('Administrator')
 def view_bookings_admin():
     startDateTimeString = request.args.get('startDateTime')
     endDateTimeString = request.args.get('endDateTime')
@@ -714,3 +717,16 @@ def view_bookings_admin():
         booking_list.append({"roomName": booking.roomName, "userId": booking.userId, "startTime": str(booking.startDateTime.replace(tzinfo=None)), "endTime": str(booking.endDateTime.replace(tzinfo=None)),  "bookingPrice": booking.bookingPrice})
     
     return {"bookings": booking_list}
+
+
+#return list of promos
+@app.route("/api/view_all_promocodes", methods=['GET'])
+@jwt_required()
+@roles_required('Staff')
+def view_promo_codes():
+    promocode_sql_list = PromoCode.query.all()
+    promocode_list = []
+    for code in promocode_sql_list:
+        promocode_list.append({"promoCode": code.promoCode, "startDate": code.startDate, "endDate": code.endDate, "discountPercentage": code.discountPercentage})
+    
+    return {"Promocodes": promocode_list}
