@@ -1,17 +1,19 @@
 // Imported libraries
 import { setHours } from "date-fns";
 import { Table } from "flowbite-react";
-import React from "react";
+import React, { useState } from "react";
+import RoomModal from "../../Rooms/RoomModal";
 
 // Imported icons
 
 function ScheduleTableRow(props) {
-	const cells = [];
+	const [modalShow, setModalShow] = useState(false);
 
+	const cells = [];
 	for (let index = 0; index < 9; index++) {
-		const value = props.data.booking[index];
+		const value = props.data.bookings[index];
 		cells.push(
-			<td>
+			<td key={index}>
 				<div
 					className={`border-2 border-gray-400 w-20 h-12 bg-gray-500 ${
 						value === 0 &&
@@ -21,13 +23,8 @@ function ScheduleTableRow(props) {
 				>
 					<button
 						type="button"
-						className={`w-full h-full ${value !== 1 && "hidden"}`}
-						onClick={() =>
-							props.handleBook(
-								props.data.name,
-								setHours(props.data.date, index + 9)
-							)
-						}
+						className={`w-full h-full ${value !== 0 && "hidden"}`}
+						onClick={() => setModalShow(true)}
 					/>
 				</div>
 			</td>
@@ -40,6 +37,24 @@ function ScheduleTableRow(props) {
 			</Table.Cell>
 			{cells}
 			<Table.Cell></Table.Cell>
+			<RoomModal
+				roomJson={{
+					capacity: 10,
+					description: "new description",
+					name: props.data.name,
+					price: 20,
+					roomType: "Lecture Hall",
+					// capacity: props.data.capacity,
+					// description: props.data.description,
+					// name: props.data.name,
+					// price: props.data.price,
+					// roomType: props.data.type,
+				}}
+				show={modalShow}
+				imageUrl={`http://127.0.0.1:5000/api/get_room_image?roomName=${props.data.name}`}
+				onClose={() => setModalShow(false)}
+				date={props.date}
+			/>
 		</Table.Row>
 	);
 }

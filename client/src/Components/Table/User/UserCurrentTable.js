@@ -28,8 +28,8 @@ function UserCurrentTable(props) {
 					res.data.bookings.forEach((rows) => {
 						let temp_dict = {
 							name: rows.roomName,
-							start: new Date(rows.startDateTime.replace(" GMT", "")),
-							end: new Date(rows.endDateTime.replace(" GMT", "")),
+							start: new Date(rows.startDateTime),
+							end: new Date(rows.endDateTime),
 						};
 						temp.push(temp_dict);
 					});

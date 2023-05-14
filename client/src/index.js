@@ -17,6 +17,7 @@ import StudentDashboard from "./Pages/StudentDashboard";
 import SearchResultPage from "./Pages/SearchResultPage";
 import AdminTransactionPage from "./Pages/AdminTransactionPage";
 import AdminRoomPage from "./Pages/AdminRoomPage";
+import StudentSchedulePage from "./Pages/StudentSchedulePage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -63,6 +64,15 @@ root.render(
 						<PrivateRoute requiredRole="Student">
 							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
 							<SearchResultPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/schedule"
+					element={
+						<PrivateRoute requiredRole="Student">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<StudentSchedulePage />
 						</PrivateRoute>
 					}
 				/>
