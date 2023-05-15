@@ -6,14 +6,20 @@ import DropDownList from "../Components/Search/DropDownList";
 import { Label } from "flowbite-react";
 import axios from "axios";
 import { AuthContext } from "../Components/Authentication/AuthContext";
+import { add, sub } from "date-fns";
 
 function AdminTransactionPage() {
     const { token } = useContext(AuthContext);
     const [data, setData] = useState([]);
     const [filter, setFilter] = useState({
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: sub(new Date(), {weeks: 1}),
+        endDate: add(new Date(), {weeks : 1}),
     });
+    useEffect(() => {
+        if(filter.startDate > filter.endDate){
+            setFilter({startDate: filter.startDate, endDate: filter.startDate});
+        }
+    }, [filter.startDate]);
     const [roomSelection, setRoomSelection] = useState(["All rooms"]);
     const [selectedRoom, setSelectedRoom] = useState("All rooms");
     const display = selectedRoom === "All rooms" ? data : data.filter((item) => item.roomName === selectedRoom);
@@ -41,12 +47,10 @@ function AdminTransactionPage() {
                         .toString()
                         .padStart(2, "0")}`,
                 },
-            },
-            {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-            }
+            },
         )
         .then((res) => {
             setData(res.data.bookings);
@@ -71,6 +75,7 @@ function AdminTransactionPage() {
                             setData={setFilter}
                             update_key="startDate"
                             className="w-36"
+                            min_date={filter.startDate}
                         />
                     </div>
                     <div>
@@ -83,6 +88,7 @@ function AdminTransactionPage() {
                             setData={setFilter}
                             update_key="endDate"
                             className="w-36"
+                            min_date={filter.startDate}
                         />
                     </div>
                 </div>
