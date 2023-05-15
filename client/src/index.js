@@ -70,29 +70,6 @@ root.render(
 						</PrivateRoute>
 					}
 				/>
-				{/* Staff Page Route */}
-				<Route
-					exact
-					path="/staff/rooms"
-					element={
-						<PrivateRoute requiredRole="Staff">
-							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
-							<StaffRoomsPage />
-							</PrivateRoute>
-							}
-					/>
-				<Route
-					exact
-					path="/staff/promos"
-					element={
-						<PrivateRoute requiredRole="Staff">
-							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
-							<StaffPromosPage />
-							</PrivateRoute>
-							}
-					/>
-				
-
 				<Route
 					path="/schedule"
 					element={
@@ -102,13 +79,35 @@ root.render(
 						</PrivateRoute>
 					}
 				/>
-				
+
 				<Route
 					path="/checkout"
 					element={
 						<PrivateRoute requiredRole="Student">
 							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
 							<CheckoutPage />
+						</PrivateRoute>
+					}
+				/>
+				
+				{/* Staff Page Route */}
+				<Route
+					exact
+					path="/staff/rooms"
+					element={
+						<PrivateRoute requiredRole="Staff">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<StaffRoomsPage />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					exact
+					path="/staff/promos"
+					element={
+						<PrivateRoute requiredRole="Staff">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<StaffPromosPage />
 						</PrivateRoute>
 					}
 				/>
