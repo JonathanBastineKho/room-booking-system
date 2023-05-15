@@ -10,7 +10,7 @@ import { TextInput } from "flowbite-react";
 import { AiOutlineSearch } from "react-icons/ai";
 
 function StudentSchedulePage() {
-	const [date, setDate] = useState({ date: new Date("2023/05/16") });
+	const [date, setDate] = useState({ date: new Date() });
 	const [search, setSearch] = useState("");
 	const [schedule, setSchedule] = useState([]);
 	const { token } = useContext(AuthContext);
@@ -36,7 +36,7 @@ function StudentSchedulePage() {
 		if (search === "") {
 			return true;
 		}
-		if (name.startsWith(search)) {
+		if (name.toLowerCase().includes(search)) {
 			return true;
 		}
 		return false;
@@ -45,9 +45,12 @@ function StudentSchedulePage() {
 	const getSchedule = () => {
 		if (token) {
 			axios
-				.get(`/api/room_details?dateTime=${format(date.date, "yyyy-MM-dd")}`, {
-					headers: { Authorization: `Bearer ${token}` },
-				})
+				.get(
+					`/api/room_details?dateTime=${format(date.date, "yyyy-MM-dd")}`,
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
 				.then((res) => {
 					setSchedule(res.data.rooms);
 					console.log(token);
@@ -99,7 +102,7 @@ function StudentSchedulePage() {
 					Your Booking
 				</div>
 			</div>
-			<div className="w-11/12 max-w-[61rem] overflow-auto mx-5 mt-3">
+			<div className="w-11/12 max-w-[62.3rem] overflow-x-scroll mx-5 mt-3">
 				<ScheduleTable
 					date={date.date}
 					schedule={schedule}
