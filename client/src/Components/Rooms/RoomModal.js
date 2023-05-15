@@ -2,7 +2,6 @@ import { Modal, Button, Select } from "flowbite-react";
 import React, { useState, useEffect, useContext } from "react";
 import DatePicker from "../Search/DatePicker";
 import { format, setHours } from "date-fns";
-import { DateContext } from "../../Pages/SearchResultPage";
 import { AuthContext } from "../Authentication/AuthContext";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -13,13 +12,13 @@ function RoomModal(props) {
 	const [data, setData] = useState({
 		// default value is date passed from parent
 		date: props.date,
-		startTime: props.startTime ? props.startTime : 0,
-		endTime: props.startTime ? props.startTime : 0,
+		startTime: 0,
+		endTime: 0,
 	});
+
 	const handleUpdate = (key, value) => {
 		setData((prev) => ({ ...prev, [key]: value }));
 	};
-
 	const setNewStartTime = (ev) => {
 		handleUpdate("startTime", ev.currentTarget.value);
 		handleUpdate("endTime", ev.currentTarget.value);
@@ -35,9 +34,11 @@ function RoomModal(props) {
 	}, [props.date]);
 
 	useEffect(() => {
+		if (props.startTime !== null && props.startTime !== undefined) {
 			handleUpdate("startTime", props.startTime);
 			handleUpdate("endTime", props.startTime);
-		}, [props.startTime]);
+		}
+	}, [props.startTime]);
 
 	// API CALL
 	const getTimeSlots = () => {
