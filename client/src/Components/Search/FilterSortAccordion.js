@@ -1,6 +1,6 @@
 // Imported Libraries
 import { Accordion, Label, Select, ToggleSwitch } from "flowbite-react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 
 // Imported local dependencies
 import RangeSlider from "./RangeSlider";
@@ -19,7 +19,7 @@ export default function FilterSortAccordion(props) {
 	});
 
 	// Dummy get Room Type -> change with api
-	const getRoomTypesList = () => {
+	const getRoomTypesList = useCallback(() => {
 		if (token) {
 			axios
 				.get("/api/types_of_rooms", {
@@ -32,10 +32,10 @@ export default function FilterSortAccordion(props) {
 					console.log(error);
 				});
 		}
-	};
+	}, [token]);
 	useEffect(() => {
 		getRoomTypesList();
-	}, []);
+	}, [getRoomTypesList]);
 
 	return (
 		<Accordion alwaysOpen={true} className="w-72">
@@ -61,6 +61,7 @@ export default function FilterSortAccordion(props) {
 								id="sortby"
 								required={true}
 								onChange={(ev) => {
+									props.setIsLoading(true);
 									props.setSortBy(ev.currentTarget.value);
 								}}
 							>
@@ -86,7 +87,9 @@ export default function FilterSortAccordion(props) {
 								</div>
 								<ToggleSwitch
 									checked={props.ascending}
-									onChange={() => props.setAscending(!props.ascending)}
+									onChange={() => {
+										props.setIsLoading(true);
+										props.setAscending(!props.ascending)}}
 								/>
 								<div
 									className={`mr-3 ${
