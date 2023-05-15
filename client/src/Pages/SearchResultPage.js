@@ -14,7 +14,6 @@ function SearchResultPage() {
 	const [searchParams] = useSearchParams();
 	const { token, logout } = useContext(AuthContext);
 	const [rooms, setRooms] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
 	const dateTime = new Date(searchParams.get("dateTime"));
 	const [sortBy, setSortBy] = useState({
 		by: "name",
@@ -29,6 +28,8 @@ function SearchResultPage() {
 		min: 0,
 		max: 20,
 	});
+	const [isSearching, setIsSearching] = useState(true);
+	const [isSorting, setIsSorting] = useState(true);
 
 	const getParams = useCallback(() => {
 		let params = `dateTime=${searchParams.get(
@@ -60,6 +61,7 @@ function SearchResultPage() {
 				})
 				.then((res) => {
 					setRooms(res.data.rooms);
+					setIsSearching(false);
 				})
 				.catch((error) => {
 					console.log(error);
@@ -113,12 +115,13 @@ function SearchResultPage() {
 	}, [searchParams, searchRooms]);
 
 	useEffect(() => {
-		if (rooms.length !== 0){
+		console.log(isSearching);
+		if (!isSearching){
 			sort(sortBy);
-			setIsLoading(false);
+			setIsSorting(false);
 		}
 		
-	}, [sortBy, sort, rooms]);
+	}, [sortBy, sort, isSearching, rooms]);
 
 	return (
 		<div className="flex flex-col items-center">
@@ -147,13 +150,13 @@ function SearchResultPage() {
 							setAscending={(val) =>
 								setSortBy((prev) => ({ ...prev, ascending: val }))
 							}
-							setIsLoading={setIsLoading}
+							setIsLoading={setIsSorting}
 							// handleFilter={handleFilter}
 						/>
 					</div>
 					<div className="mx-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
-						{isLoading && <Spinner />}
-						{!isLoading && rooms.map((value) => {
+						{(isSearching || isSorting) && <Spinner />}
+						{!isSearching && !isSorting && rooms.map((value) => {
 							if (filter(value)) {
 								return (
 									<div key={value.name}>
