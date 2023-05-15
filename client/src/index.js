@@ -10,6 +10,7 @@ import UnAuthenticatedRoute from "./Components/Authentication/UnAuthenticateRout
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import NavigationBar from "./Components/NavBar/NavigationBar";
+import CheckoutPage from "./Pages/CheckoutPage";
 import LoginPage from "./Pages/LoginPage";
 import TestPage from "./Pages/TestPage";
 import RegisterPage from "./Pages/RegisterPage";
@@ -19,7 +20,6 @@ import AdminTransactionPage from "./Pages/AdminTransactionPage";
 import AdminRoomPage from "./Pages/AdminRoomPage";
 import StudentSchedulePage from "./Pages/StudentSchedulePage";
 import StaffPromosPage from "./Pages/StaffPromosPage";
-import CheckoutPage from "./Pages/CheckoutPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
