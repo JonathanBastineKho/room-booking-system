@@ -275,7 +275,7 @@ def modify_booking():
                 and_(Booking.endDateTime > newStartDateTime, Booking.endDateTime <= newEndDateTime)
             )
         ).first()
-            if clashed_bookings != None and (clashed_bookings.roomName != roomName or clashed_bookings.startDate != currStartDateTime):
+            if clashed_bookings != None and (clashed_bookings.roomName != roomName or clashed_bookings.startDateTime != currStartDateTime):
                 return {"success": False, "message": "The inputted time clashes with another booking time"}
             
             #if program ends up here, no interfering bookings
@@ -315,7 +315,7 @@ def get_scheduled_bookings():
 # type 3
 @app.route("/api/types_of_rooms", methods=['GET'])
 @jwt_required()
-@roles_required('Student') #Administrator, Staff, Student
+@roles_required('Student')
 def get_type_of_rooms():
     #return {"typesOfRooms": [room.value for room in TypeOfRoom]}
     type_sql_list = db.session.query(Room.roomType).distinct().all()
