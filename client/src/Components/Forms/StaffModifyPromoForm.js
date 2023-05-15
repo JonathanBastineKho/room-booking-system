@@ -41,47 +41,36 @@ function StaffModifyPromoForm(props) {
     setData((prev) => ({ ...prev, [key]: value }));
   };
   const handleModify = (event) => {
-    if (
-      data.code &&
-      data.startDate &&
-      data.startTime &&
-      data.endDate &&
-      data.endTime &&
-      data.discount
-    ) {
-      // var formData = new FormData();
-      // formData.append("code", data.name);
-      // formData.append(
-      // 	"start",
-      // 	format(setHours(data.startDate, data.startTime), "yyyy-MM-dd HH")
-      // );
-      // formData.append(
-      // 	"end",
-      // 	format(setHours(data.endDate, data.endTime), "yyyy-MM-dd HH")
-      // );
-      // formData.append("discount", data.capacity);
-      // axios
-      // 	.post("/api/create_room", formData, {
-      // 		headers: {
-      // 			Authorization: `Bearer ${token}`,
-      // 			"Content-Type": "multipart/form-data",
-      // 		},
-      // 	})
-      // 	.then((res) => {
-      // 		if (res.data.success) {
-      // 			props.onClose();
-      // 		} else {
-      // 			alert("Failed to add promo code.");
-      // 		}
-      // 	})
-      // 	.catch((error) => {
-      // 		alert("Failed to add promo code.");
-      // 		console.log(error);
-      // 	});
-      event.preventDefault();
-      console.log(data);
-      props.onClose();
-
+    if (data.promoCode && data.startDate && data.endDate && data.discount) {
+      const jsonToSubmit = {
+        promoCode: props.data.promoCode,
+        startDate: props.data.startDate.toISOString().slice(0, 10),
+        newstartDate: data.startDate.toISOString().slice(0, 10),
+        newendDate: data.endDate.toISOString().slice(0, 10),
+        discountPercentage: data.discount,
+        newPromoCode: data.promoCode,
+      };
+      console.log("data", data)
+      console.log("json", jsonToSubmit)
+      axios
+        .patch("/api/modify_promo_code", jsonToSubmit, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          console.log(res.data)
+          if (res.data.success) {
+            console.log("successful api call")
+            props.onClose();
+            props.getPromos();
+          } else {
+            alert("Failed to edit promo code.");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     } else {
       alert("Incomplete data");
     }
@@ -98,11 +87,11 @@ function StaffModifyPromoForm(props) {
             <TextInput
               id="promocode"
               placeholder="Enter promo code"
-              defaultValue={data.code}
+              defaultValue={data.promoCode}
               required={true}
               onChange={(ev) => {
-                if (ev.target.value !== data.code) {
-                  handleUpdate("code", ev.target.value);
+                if (ev.target.value !== data.promoCode) {
+                  handleUpdate("promoCode", ev.target.value);
                 }
               }}
             />
@@ -139,32 +128,6 @@ function StaffModifyPromoForm(props) {
             />
           </div>
           <div className="flex flex-col w-1/2">
-            <div className="mb-2 block">
-              <Label htmlFor="starttime" value="Start time" />
-            </div>
-            <Select
-              id="starttime"
-              required={true}
-              onChange={(ev) => {
-                handleUpdate("startTime", ev.target.value);
-                handleUpdate("endTime", ev.target.value + 1);
-              }}
-              value={data.startTime}
-            >
-              <option value={9}>9:00am</option>
-              <option value={10}>10:00am</option>
-              <option value={11}>11:00am</option>
-              <option value={12}>12:00pm</option>
-              <option value={13}>1:00pm</option>
-              <option value={14}>2:00pm</option>
-              <option value={15}>3:00pm</option>
-              <option value={16}>4:00pm</option>
-              <option value={17}>5:00pm</option>
-            </Select>
-          </div>
-        </div>
-        <div className="flex flex-row justify-between gap-x-2">
-          <div className="flex flex-col w-1/2">
             <div className="mb-2">
               <Label htmlFor="enddate" value="End date" />
             </div>
@@ -177,23 +140,13 @@ function StaffModifyPromoForm(props) {
               className=""
             />
           </div>
-          <div className="flex flex-col w-1/2">
-            <div className="mb-2 block">
-              <Label htmlFor="endtime" value="End time" />
-            </div>
-            <Select
-              id="endtime"
-              required={true}
-              onChange={(ev) => {
-                handleUpdate("endTime", ev.target.value);
-              }}
-              value={data.endTime}
-            >
-              {endTimeSlots}
-            </Select>
-          </div>
         </div>
-        <Button className="mt-2 rounded-lg" size={"lg"} onClick={handleModify} type="submit">
+        <Button
+          className="mt-2 rounded-lg"
+          size={"lg"}
+          onClick={handleModify}
+          type="submit"
+        >
           Modify Promo Code
         </Button>
       </div>

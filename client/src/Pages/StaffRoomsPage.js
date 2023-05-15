@@ -6,18 +6,12 @@ import { Button, Card, Label, Modal, Spinner, TextInput } from "flowbite-react";
 import axios from "axios";
 import StaffCreateRoomModal from "../Components/Modal/StaffCreateRoomModal";
 
-
 function StaffRoomsPage() {
   const [filter, setFilter] = useState(null);
   const [rooms, setRooms] = useState(null);
   const [createShow, setCreateShow] = useState(false);
-  
+
   const { token } = useContext(AuthContext);
-
-
-  // useEffect(() => {
-  //   console.log(filter)
-  // }, [filter])
 
   // 		name: "Room 1",
   // 		type: "Meeting Room",
@@ -51,7 +45,6 @@ function StaffRoomsPage() {
             };
             temp.push(temp_dict);
           });
-          console.log(temp);
           setRooms(temp);
         })
         .catch((error) => {
@@ -63,13 +56,6 @@ function StaffRoomsPage() {
   useEffect(() => {
     getRooms();
   }, [getRooms]);
-
-
-  console.log(token);
-
-  // useEffect(() => {
-  //   console.log("filter: " + filter);
-  // }, [filter])
 
   return (
     <div>
@@ -99,8 +85,11 @@ function StaffRoomsPage() {
             getRooms={getRooms}
             filter={filter}
           />
-          <StaffCreateRoomModal show={createShow} onClose={() => setCreateShow(false)} getRooms={getRooms}/>
-          
+          <StaffCreateRoomModal
+            show={createShow}
+            onClose={() => setCreateShow(false)}
+            getRooms={getRooms}
+          />
         </Card>
       ) : (
         <Spinner />

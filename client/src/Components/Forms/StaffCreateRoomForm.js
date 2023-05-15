@@ -44,27 +44,23 @@ function StaffCreateRoomForm(props) {
       formData.append("price", data.price);
       formData.append("capacity", data.capacity);
       formData.append("file", data.file);
-      formData.append("description", data.description)
+      formData.append("description", data.description);
       axios
-      	.post("/api/create_room", formData, {
-      		headers: {
-      			Authorization: `Bearer ${token}`,
-      			"Content-Type": "multipart/form-data",
-      		},
-      	})
-      	.then((res) => {
-      		if (res.data.success) {
-            console.log("post request success")
-      			props.onClose();
+        .post("/api/create_room", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          if (res.data.success) {
+            props.onClose();
             props.getRooms();
-      		}
-      	})
-      	.catch((error) => {
-      		alert("Failed to add room.");
-      		console.log(error);
-      	});
-      console.log(data);
-
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     } else {
       alert("Incomplete data");
     }
@@ -93,18 +89,15 @@ function StaffCreateRoomForm(props) {
             <div className="mb-2 block">
               <Label htmlFor="room_type" value="Room type" />
             </div>
-            <Select id="room_type" onChange={(ev) => {
-              handleUpdate("type", ev.target.value)
-            }}>
-              <option value="LECTURE_HALL">
-                Lecture Hall
-              </option>
-              <option value="MEETING_ROOM">
-                Meeting Room
-              </option>
-              <option value="PRIVATE_POD">
-                Private Pod
-              </option>
+            <Select
+              id="room_type"
+              onChange={(ev) => {
+                handleUpdate("type", ev.target.value);
+              }}
+            >
+              <option value="LECTURE_HALL">Lecture Hall</option>
+              <option value="MEETING_ROOM">Meeting Room</option>
+              <option value="PRIVATE_POD">Private Pod</option>
             </Select>
           </div>
         </div>
