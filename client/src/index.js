@@ -10,6 +10,7 @@ import UnAuthenticatedRoute from "./Components/Authentication/UnAuthenticateRout
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import NavigationBar from "./Components/NavBar/NavigationBar";
+import CheckoutPage from "./Pages/CheckoutPage";
 import LoginPage from "./Pages/LoginPage";
 import TestPage from "./Pages/TestPage";
 import RegisterPage from "./Pages/RegisterPage";
@@ -101,6 +102,17 @@ root.render(
 						</PrivateRoute>
 					}
 				/>
+				
+				<Route
+					path="/checkout"
+					element={
+						<PrivateRoute requiredRole="Student">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<CheckoutPage />
+						</PrivateRoute>
+					}
+				/>
+
 				{/* Admin Routes */}
 				<Route
 					path="/administrator"
