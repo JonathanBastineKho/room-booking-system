@@ -15,9 +15,11 @@ import TestPage from "./Pages/TestPage";
 import RegisterPage from "./Pages/RegisterPage";
 import StudentDashboard from "./Pages/StudentDashboard";
 import SearchResultPage from "./Pages/SearchResultPage";
+import StaffRoomsPage from "./Pages/StaffRoomsPage";
 import AdminTransactionPage from "./Pages/AdminTransactionPage";
 import AdminRoomPage from "./Pages/AdminRoomPage";
 import StudentSchedulePage from "./Pages/StudentSchedulePage";
+import StaffPromosPage from "./Pages/StaffPromosPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -67,6 +69,29 @@ root.render(
 						</PrivateRoute>
 					}
 				/>
+				{/* Staff Page Route */}
+				<Route
+					exact
+					path="/staff/rooms"
+					element={
+						<PrivateRoute requiredRole="Staff">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<StaffRoomsPage />
+							</PrivateRoute>
+							}
+					/>
+				<Route
+					exact
+					path="/staff/promos"
+					element={
+						<PrivateRoute requiredRole="Staff">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<StaffPromosPage />
+							</PrivateRoute>
+							}
+					/>
+				
+
 				<Route
 					path="/schedule"
 					element={
