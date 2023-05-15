@@ -315,7 +315,7 @@ def get_scheduled_bookings():
 # type 3
 @app.route("/api/types_of_rooms", methods=['GET'])
 @jwt_required()
-@roles_required('Student') #Administrator, Staff, Student
+@roles_required('Student')
 def get_type_of_rooms():
     #return {"typesOfRooms": [room.value for room in TypeOfRoom]}
     type_sql_list = db.session.query(Room.roomType).distinct().all()
@@ -338,6 +338,9 @@ def create_booking():
     startDateTime = datetime.strptime(startDateTimeString, '%Y-%m-%d %H')
     endDateTime = datetime.strptime(endDateTimeString, '%Y-%m-%d %H')
     duration = endDateTime.hour - startDateTime.hour
+
+    if startDateTime.hour < 9 or endDateTime.hour > 17:
+        return {"success": False, "message": "The time chosen is invalid"}
 
     # check promo code
     if promoCode == None:
@@ -555,8 +558,9 @@ def create_promo_code():
 
     # Check constraint
     available_promo = PromoCode.query.filter_by(promoCode = promoCode).all()
-    if available_promo != None:
-        for promo in available_promo:
+    
+    for promo in available_promo:
+        if promo.promoCode != promoCode or promo.startDate != startDate:
             if (startDate > promo.startDate and startDate < promo.endDate) or (endDate > promo.startDate and endDate < promo.endDate):
                 return {"success": False, "message": "Promocode date range invalid"}
 
@@ -592,9 +596,9 @@ def modify_promo_code():
             return {"success": False, "message": "Promotional code does not exist"}
 
         available_promo = PromoCode.query.filter_by(promoCode = newPromoCode).all()
-        if available_promo != None:
-            for promo in available_promo:
-                if (newStartDate > promo.startDate and newStartDate < promo.endDate) or (newendDate > promo.startDate and newendDate < promo.endDate):
+        for promo in available_promo:
+            if promo.promoCode != promoCode or promo.startDate != startDate:
+                if (startDate > promo.startDate and startDate < promo.endDate) or (newendDate > promo.startDate and newendDate < promo.endDate):
                     return {"success": False, "message": "Promocode date range invalid"}
         
         promo_code_to_change.promoCode = newPromoCode
@@ -727,6 +731,22 @@ def view_promo_codes():
     promocode_sql_list = PromoCode.query.all()
     promocode_list = []
     for code in promocode_sql_list:
-        promocode_list.append({"promoCode": code.promoCode, "startDate": code.startDate, "endDate": code.endDate, "discountPercentage": code.discountPercentage})
+        promocode_list.append({"promoCode": code.promoCode, "startDate": str(code.startDate.replace(tzinfo=None)), "endDate": str(code.endDate.replace(tzinfo=None)), "discountPercentage": code.discountPercentage})
     
     return {"Promocodes": promocode_list}
+
+@app.route("/api/view_promo_discount", methods=['GET'])
+@jwt_required()
+@roles_required('Student')
+def view_promo_discount():
+    promoCode = request.args.get('promoCode')
+    bookingStartDate = request.args.get('startDate')
+
+    bookingStartDate = datetime.strptime(bookingStartDate, '%Y-%m-%d %H')
+
+    promocode_sql_obj = PromoCode.query.filter(and_(PromoCode.promoCode == promoCode, PromoCode.startDate <= bookingStartDate, PromoCode.endDate > bookingStartDate)).one_or_none()
+
+    if promocode_sql_obj == None:
+        return {"success": False, "message": "Promo Code does not exist"}
+
+    return {"success": True, "discount": promocode_sql_obj.discountPercentage}
