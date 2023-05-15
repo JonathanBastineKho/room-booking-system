@@ -390,7 +390,7 @@ def create_room():
         return {"success" : False, "message" : "No selected file"}
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file.save(os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename))
         new_room = Room(
             name = room_name,
             imgUrl = os.path.join(app.config['UPLOAD_FOLDER'], filename),
