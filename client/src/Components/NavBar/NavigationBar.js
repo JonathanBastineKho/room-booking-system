@@ -13,8 +13,8 @@ import { AuthContext } from "../Authentication/AuthContext";
 
 function NavigationBar(props) {
     const { token, logout } = useContext(AuthContext);
-	const user = jwtDecode(token);
-	const navigate = useNavigate();
+    const user = jwtDecode(token);
+    const navigate = useNavigate();
 
     return (
         <div className={props.className}>
@@ -46,24 +46,43 @@ function NavigationBar(props) {
                                 {user.email}
                             </span>
                         </Dropdown.Header>
-                        <Dropdown.Item onClick={(event) => {
-							logout();
-							navigate("/login");
-						}}>Sign out</Dropdown.Item>
+                        <Dropdown.Item
+                            onClick={(event) => {
+                                logout();
+                                navigate("/login");
+                            }}
+                        >
+                            Sign out
+                        </Dropdown.Item>
                     </Dropdown>
                     <Navbar.Toggle />
                 </div>
-                {user.user_type === "Student" ? (
+                {user.user_type === "Student" && (
                     <Navbar.Collapse>
                         <NavigationLink target="/">Home</NavigationLink>
-                        <NavigationLink target="/schedule">Schedule</NavigationLink>
-                        <NavigationLink target="/#current_booking">Bookings</NavigationLink>
+                        <NavigationLink target="/schedule">
+                            Schedule
+                        </NavigationLink>
+                        <NavigationLink target="/#current_booking">
+                            Bookings
+                        </NavigationLink>
                     </Navbar.Collapse>
-                ) : (
+                )}
+                {user.user_type === "Administrator" && (
                     <Navbar.Collapse>
                         <NavigationLink target="/">Dashboard</NavigationLink>
                         <NavigationLink target="/administrator/rooms">
                             Rooms
+                        </NavigationLink>
+                    </Navbar.Collapse>
+                )}
+                {user.user_type === "Staff" && (
+                    <Navbar.Collapse>
+                        <NavigationLink target="/staff/rooms">
+                            Rooms
+                        </NavigationLink>
+                        <NavigationLink target="/staff/promos">
+                            Promos
                         </NavigationLink>
                     </Navbar.Collapse>
                 )}

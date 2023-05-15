@@ -8,7 +8,7 @@ import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
-app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'room_image')
+app.config['UPLOAD_FOLDER'] = 'room_image'
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)

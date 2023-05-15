@@ -9,6 +9,7 @@ import {
 	format,
 	getDate,
 	getDay,
+	isAfter,
 	isFuture,
 	isPast,
 	isSameDay,
@@ -30,13 +31,13 @@ function DateButton(props) {
 		<div
 			className={`p-2 rounded-lg
 			${
-				(isToday(props.date) || isFuture(props.date)) &&
+				(isSameDay(props.date, props.min_date) || isAfter(props.date, props.min_date)) &&
 				!isSameDay(props.date, props.selected) &&
 				"text-white font-semibold hover:bg-gray-500"
 			} 
 			${
-				isPast(props.date) &&
-				!isToday(props.date) &&
+				isAfter(props.min_date, props.date) &&
+				!isSameDay(props.date, props.min_date) &&
 				"text-gray-500 hover:bg-transparent"
 			} 
 			${
@@ -45,7 +46,7 @@ function DateButton(props) {
 			}
 			${props.className}`}
 			onClick={() => {
-				if (isFuture(props.date) || isToday(props.date)) {
+				if (isSameDay(props.date, props.min_date) || isAfter(props.date, props.min_date)) {
 					props.updateData(props.date);
 				}
 			}}
@@ -66,7 +67,6 @@ export default function DatePicker(props) {
 			[key]: value,
 		}));
 	};
-
 	return (
 		<div
 			id="select"
@@ -149,6 +149,7 @@ export default function DatePicker(props) {
 								key={date}
 								className="text-gray-300"
 								date={date}
+								min_date={props.min_date}
 								updateData={(val) => {
 									updateData(props.update_key, val);
 									setOpen(false);
@@ -164,6 +165,7 @@ export default function DatePicker(props) {
 						<DateButton
 							key={date}
 							date={date}
+							min_date={props.min_date}
 							updateData={(val) => {
 								updateData(props.update_key, val);
 								setOpen(false);
@@ -185,6 +187,7 @@ export default function DatePicker(props) {
 								key={date}
 								className="text-gray-300"
 								date={date}
+								min_date={props.min_date}
 								updateData={(val) => {
 									updateData(props.update_key, val);
 									setOpen(false);

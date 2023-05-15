@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import HorizontalSearchCard from "../Components/Search/HorizontalSearchCard";
@@ -6,6 +6,7 @@ import FilterSortAccordion from "../Components/Search/FilterSortAccordion";
 import { AuthContext } from "../Components/Authentication/AuthContext";
 import RoomCard from "../Components/Rooms/RoomCard";
 import { format } from "date-fns";
+import { Spinner } from "flowbite-react";
 
 export const DateContext = createContext();
 
@@ -27,16 +28,10 @@ function SearchResultPage() {
 		min: 0,
 		max: 20,
 	});
+	const [isSearching, setIsSearching] = useState(true);
+	const [isSorting, setIsSorting] = useState(true);
 
-	useEffect(() => {
-		searchRooms();
-	}, [searchParams]);
-
-	useEffect(() => {
-		sort(sortBy);
-	}, [sortBy]);
-
-	const getParams = () => {
+	const getParams = useCallback(() => {
 		let params = `dateTime=${searchParams.get(
 			"dateTime"
 		)}&roomName=${searchParams.get("roomName")}`;
@@ -56,9 +51,9 @@ function SearchResultPage() {
 			params += "&capacity=20";
 		}
 		return params;
-	};
+	}, [searchParams]);
 
-	const searchRooms = () => {
+	const searchRooms = useCallback(() => {
 		if (token) {
 			axios
 				.get(`/api/search?${getParams()}`, {
@@ -66,16 +61,17 @@ function SearchResultPage() {
 				})
 				.then((res) => {
 					setRooms(res.data.rooms);
+					setIsSearching(false);
 				})
 				.catch((error) => {
 					console.log(error);
 					logout();
 				});
 		}
-	};
+	}, [token, getParams, logout]);
 
 	// Dummy sort -> change with table library sorting/api
-	const sort = (key) => {
+	const sort = useCallback((key) => {
 		setRooms(
 			rooms.sort((a, b) => {
 				let x = 0;
@@ -84,13 +80,13 @@ function SearchResultPage() {
 				} else if (a[key.by] < b[key.by]) {
 					x = -1;
 				}
-				if (key.ascending) {
+				if (!key.ascending) {
 					x *= -1;
 				}
 				return x;
 			})
 		);
-	};
+	}, [rooms]);
 
 	// Dummy filter -> change with table library filter/api
 	const filter = (room) => {
@@ -113,6 +109,19 @@ function SearchResultPage() {
 	// useEffect(() => {
 	// 	props.handleFilter(roomType, price, capacity, time);
 	// }, [roomType, price, capacity, time]);
+
+	useEffect(() => {
+		searchRooms();
+	}, [searchParams, searchRooms]);
+
+	useEffect(() => {
+		console.log(isSearching);
+		if (!isSearching){
+			sort(sortBy);
+			setIsSorting(false);
+		}
+		
+	}, [sortBy, sort, isSearching, rooms]);
 
 	return (
 		<div className="flex flex-col items-center">
@@ -141,11 +150,13 @@ function SearchResultPage() {
 							setAscending={(val) =>
 								setSortBy((prev) => ({ ...prev, ascending: val }))
 							}
+							setIsLoading={setIsSorting}
 							// handleFilter={handleFilter}
 						/>
 					</div>
 					<div className="mx-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
-						{rooms.map((value) => {
+						{(isSearching || isSorting) && <Spinner />}
+						{!isSearching && !isSorting && rooms.map((value) => {
 							if (filter(value)) {
 								return (
 									<div key={value.name}>
