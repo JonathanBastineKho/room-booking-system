@@ -18,6 +18,7 @@ import SearchResultPage from "./Pages/SearchResultPage";
 import AdminTransactionPage from "./Pages/AdminTransactionPage";
 import AdminRoomPage from "./Pages/AdminRoomPage";
 import StudentSchedulePage from "./Pages/StudentSchedulePage";
+import StaffPromosPage from "./Pages/StaffPromosPage";
 import CheckoutPage from "./Pages/CheckoutPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -77,15 +78,7 @@ root.render(
 						</PrivateRoute>
 					}
 				/>
-				<Route
-					path="/checkout"
-					element={
-						<PrivateRoute requiredRole="Student">
-							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
-							<CheckoutPage />
-						</PrivateRoute>
-					}
-				/>
+
 				{/* Admin Routes */}
 				<Route
 					path="/administrator"
