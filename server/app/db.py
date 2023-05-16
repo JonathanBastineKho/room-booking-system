@@ -38,18 +38,16 @@ class Room(db.Model):
     isApproved = db.Column(db.Boolean, default=False, nullable=False)
     approvedDateTime = db.Column(db.DateTime, nullable=True, default=None)
     
-    bookingRoomRel = db.relationship("Booking", back_populates='roomBookingRel')
+    bookingRoomRel = db.relationship("Booking", back_populates='roomBookingRel', cascade='all, delete, save-update')
     approvedByRel = db.relationship("User", back_populates="roomApprovedRel", foreign_keys="Room.approvedByUsername")
     launchedByRel = db.relationship("User", back_populates="roomLaunchedRel", foreign_keys="Room.launchedByUsername")
 
     approvedByUsername = db.Column(db.String(250), db.ForeignKey('user.username'))
     launchedByUsername = db.Column(db.String(250), db.ForeignKey('user.username'))
- 
-    
 class Booking(db.Model):
     __tablename__ = 'booking'
     startDateTime = db.Column(db.DateTime, primary_key=True)
-    roomBookingRel = db.relationship("Room", back_populates='bookingRoomRel')
+    roomBookingRel = db.relationship("Room", back_populates='bookingRoomRel', cascade='all, delete, save-update')
     roomName = db.Column(db.String(250), db.ForeignKey('room.name'), primary_key=True)
     endDateTime = db.Column(db.DateTime, nullable=False)
     bookingPrice = db.Column(db.Float, nullable=False)
@@ -66,7 +64,6 @@ class PromoCode(db.Model):
 
     createdByRel = db.relationship("User", back_populates='promoCodeRel')
     promoCreatedBy = db.Column(db.String(250), db.ForeignKey('user.username'), nullable=False)
-    
-    
+
 with app.app_context():
     db.create_all()
