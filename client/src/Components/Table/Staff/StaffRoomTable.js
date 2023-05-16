@@ -6,32 +6,6 @@ import React from "react";
 import StaffRoomTableRow from "./StaffRoomTableRow";
 
 function StaffRoomTable(props) {
-  // Dummy data -> change with props.data which will be extracted from API.
-  // const data = [
-  // 	{
-  // 		name: "Room 1",
-  // 		type: "Meeting Room",
-  // 		price: 10,
-  // 		capacity: 10,
-  // 		description: "Its a meeting room",
-  // 		launched: {
-  // 			is: true,
-  // 			date: new Date(),
-  // 		},
-  // 	},
-  // 	{
-  // 		name: "Room 2",
-  // 		type: "Meeting Room",
-  // 		price: 10,
-  // 		capacity: 10,
-  // 		description:
-  // 			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  // 		launched: {
-  // 			is: false,
-  // 			date: null,
-  // 		},
-  // 	},
-  // ];
   return (
     <div>
       <Table hoverable={props.hoverable} className={props.className}>
@@ -54,7 +28,7 @@ function StaffRoomTable(props) {
             .filter(
               (value) =>
                 !props.filter ||
-                value.name.toLowerCase().startsWith(props.filter.toLowerCase())
+                value.name.toLowerCase().includes(props.filter.toLowerCase())
             )
             .map((value) => (
               <StaffRoomTableRow data={value} getRooms={props.getRooms} />
