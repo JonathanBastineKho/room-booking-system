@@ -15,7 +15,7 @@ function CheckoutPage() {
 		percentage: 0,
 	});
 	const { token } = useContext(AuthContext);
-	const booking = {
+	const [booking, setBooking] = useState({
 		name: searchParams.get("roomName"),
 		startDateTime: setHours(
 			new Date(searchParams.get("date")),
@@ -25,17 +25,44 @@ function CheckoutPage() {
 			new Date(searchParams.get("date")),
 			parseInt(searchParams.get("endTime")) + 10
 		),
-		desc: "A private meeting room located at SIM HQ Blk B",
-		capacity: 10,
-		pricePerHours: 5,
+		description: "",
+		pricePerHours: 0,
+		capacity: 0
+	});
+
+	useEffect(() => {
+		getRoomDetails();
+	}, []);
+
+	const getRoomDetails = () => {
+		if (token) {
+			axios
+				.get(`/api/view_room_details?roomName=${booking.name}`, {
+					headers: { Authorization: `Bearer ${token}` },
+				})
+				.then((res) => {
+					if (res.data.success) {
+						setBooking((prev) => ({
+							...prev,
+							description: res.data.room.description,
+							pricePerHours: res.data.room.price,
+							capacity: res.data.room.capacity,
+						}));
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		}
 	};
+
 	const getPromoCode = () => {
 		if (token) {
 			axios
 				.get(
 					`/api/view_promo_discount?promoCode=${promo}&startDate=${format(
 						booking.startDateTime,
-						"yyyy-MM-dd HH"
+						"yyyy-MM-dd"
 					)}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
