@@ -142,7 +142,7 @@ def get_booking_slots(room_name, date, user):
 @roles_required('Student')
 def search():
     args = request.args
-    userRoomName = args.get('roomName')
+    userRoomName = args.get('roomName').lower()
     capacity_list = args.getlist('capacity')
     userDateTimeString = args.get('dateTime')
 
@@ -167,7 +167,7 @@ def search():
     
     for i in range(len(room_list)):
         r = room_list[i]
-        room_list[i] = {"name": r.name, "imgUrl": r.imgUrl, "roomType": r.roomType.value, "price": r.price, "capacity": r.capacity, "description": r.description}
+        room_list[i] = {"name": r.name.title(), "imgUrl": r.imgUrl, "roomType": r.roomType.value, "price": r.price, "capacity": r.capacity, "description": r.description}
     
     return {"rooms": room_list}
 
@@ -183,7 +183,7 @@ def view_current_bookings():
     bookings_sql_list = Booking.query.filter(and_(Booking.endDateTime > currentDateTime), Booking.userId == userId).all()
     booking_list = []
     for booking in bookings_sql_list:
-        booking_list.append({"roomName": booking.roomName, 
+        booking_list.append({"roomName": booking.roomName.title(), 
         "startDateTime": str(booking.startDateTime.replace(tzinfo=None)), 
         "endDateTime": str(booking.endDateTime.replace(tzinfo=None)),
         "bookingPrice" : booking.bookingPrice})
@@ -202,7 +202,7 @@ def view_past_bookings():
     bookings_sql_list = Booking.query.filter(and_(Booking.endDateTime <= currentDateTime), Booking.userId == userId)
     booking_list = []
     for booking in bookings_sql_list:
-        booking_list.append({"roomName": booking.roomName, 
+        booking_list.append({"roomName": booking.roomName.title(), 
         "startDateTime": str(booking.startDateTime.replace(tzinfo=None)), 
         "endDateTime": str(booking.endDateTime.replace(tzinfo=None)),
         "bookingPrice" : booking.bookingPrice})
@@ -215,7 +215,7 @@ def view_past_bookings():
 @roles_required('Student')
 def cancel_booking():
     userId = get_jwt().get('sub')
-    roomName = request.json.get('roomName')
+    roomName = request.json.get('roomName').lower()
     startDateTimeString = request.json.get('startDateTime')
 
     currentStartDateTime = datetime.now()
@@ -245,7 +245,7 @@ def modify_booking():
 
     # duration cannot be longer than previous duration
     userId = get_jwt().get('sub')
-    roomName = request.json.get('roomName')
+    roomName = request.json.get('roomName').lower()
     currStartDateTime = request.json.get('startDateTime')
     newStartDateTime = request.json.get('newStartDateTime')
     newEndDateTime = request.json.get('newEndDateTime')
@@ -304,7 +304,7 @@ def get_scheduled_bookings():
     list_of_rooms = Room.query.filter(and_(Room.isLaunched == True, Room.isApproved == True)).all()
     for room in list_of_rooms:
         booking_slots = get_booking_slots(room_name=room.name, date=dateString, user=user)
-        room_list.append({"roomName": room.name, "roomDescription": room.description, "roomType": room.roomType.value, "price": room.price, "bookingSlots": booking_slots})
+        room_list.append({"roomName": room.name.title(), "roomDescription": room.description, "roomType": room.roomType.value, "price": room.price, "bookingSlots": booking_slots})
 
     return {"rooms": room_list}
 
@@ -327,11 +327,12 @@ def get_type_of_rooms():
 
 @app.route("/api/create_booking", methods=['POST'])
 @jwt_required()
+@roles_required('Student')
 def create_booking():
-    roomName = request.json.get('roomName')
+    roomName = request.json.get('roomName').lower()
     startDateTimeString = request.json.get('startDateTime')
     endDateTimeString = request.json.get('endDateTime')
-    promoCode = request.json.get('promoCode')
+    promoCode = None if request.json.get('promoCode') == None else request.json.get('promoCode').upper()
     user = get_jwt().get('sub')
 
     #convert the datetimes into object
@@ -380,7 +381,7 @@ def create_booking():
 @jwt_required()
 @roles_required('Staff')
 def create_room():
-    room_name = request.form.get('roomName')
+    room_name = request.form.get('roomName').lower()
     if Room.query.filter_by(name = room_name).one_or_none():
         return {"success" : False, "message" : "Room already exist"}
     if 'file' not in request.files:
@@ -409,7 +410,7 @@ def create_room():
 @roles_required('Staff')
 def launch_room():
     user = get_jwt().get('sub')
-    name = request.json.get("roomName")
+    name = request.json.get("roomName").lower()
     with app.app_context():
         room = Room.query.filter_by(name = name).one_or_none()
         if room == None:
@@ -427,7 +428,7 @@ def launch_room():
 @roles_required('Administrator')
 def approve_room():
     user = get_jwt().get('sub')
-    name = request.json.get("roomName")
+    name = request.json.get("roomName").lower()
     with app.app_context():
         room = Room.query.filter_by(name = name).one_or_none()
         if room == None:
@@ -446,7 +447,6 @@ def approve_room():
 @jwt_required()
 @roles_required('Staff', 'Administrator')
 def get_list_of_rooms():
-
     user = get_jwt().get('user_type')
     room_list = []
     if user == 'Staff':
@@ -455,7 +455,7 @@ def get_list_of_rooms():
         accessible_rooms = Room.query.filter(Room.isLaunched == True).all()
     
     for room in accessible_rooms:
-        room_list.append({"roomName": room.name, 
+        room_list.append({"roomName": room.name.title(), 
                         "imgUrl":room.imgUrl, "roomType":room.roomType.value, 
                         "price": room.price, "capacity": room.capacity, 
                         "description": room.description, "isLaunched": room.isLaunched, 
@@ -472,7 +472,7 @@ def get_list_of_rooms():
 @jwt_required()
 @roles_required('Staff')
 def modify_room():
-    roomName = request.args.get('roomName')
+    roomName = request.args.get('roomName').lower()
     with app.app_context():
         room = Room.query.filter(Room.name == roomName).one_or_none()
         if room == None:
@@ -498,7 +498,7 @@ def modify_room():
             price = request.form.get('price')
             capacity = request.form.get('capacity')
             description = request.form.get('description')
-            newRoomName = request.form.get('newRoomName')
+            newRoomName = request.form.get('newRoomName').lower()
 
             if roomName != newRoomName:
                 if (Room.query.filter(Room.name == newRoomName).one_or_none() != None):
@@ -510,7 +510,7 @@ def modify_room():
                 return {"success" : False, "message" : "No selected file"}
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                file.save(os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename))
 
                 room.imgUrl = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 room.name = newRoomName
@@ -519,6 +519,11 @@ def modify_room():
                 room.capacity = capacity
                 room.description = description
 
+                booking_sql_list = Booking.query.filter_by(roomName = room.name).all()
+
+                for booking in booking_sql_list:
+                    booking.roomName = room.name
+                
                 db.session.commit()
             return {"success" : True, "message" : "Room successfully modified"}
 
@@ -526,7 +531,7 @@ def modify_room():
 @jwt_required()
 @roles_required('Staff')
 def delete_room():
-    roomName = request.json.get('roomName')
+    roomName = request.json.get('roomName').lower()
     with app.app_context():
         room = Room.query.filter(Room.name == roomName).one_or_none()
 
@@ -543,7 +548,7 @@ def delete_room():
 @roles_required('Staff')
 def create_promo_code():
     username = get_jwt().get('sub')
-    promoCode = request.json.get('promoCode')
+    promoCode = request.json.get('promoCode').upper()
     startDate = request.json.get('startDate')
     endDate = request.json.get('endDate')
     discountPercentage = request.json.get('discountPercentage')
@@ -581,13 +586,13 @@ def create_promo_code():
 @roles_required('Staff')
 def modify_promo_code():
     # Identifier
-    promoCode = request.json.get('promoCode')
+    promoCode = request.json.get('promoCode').upper()
     startDate = datetime.strptime(request.json.get('startDate'), "%Y-%m-%d")
     
     newStartDate = datetime.strptime(request.json.get('newstartDate'), "%Y-%m-%d")
     newendDate = datetime.strptime(request.json.get('newendDate'), "%Y-%m-%d")
     discountPercentage = int(request.json.get('discountPercentage'))
-    newPromoCode = request.json.get('newPromoCode')
+    newPromoCode = request.json.get('newPromoCode').upper()
 
     with app.app_context():
         promo_code_to_change = PromoCode.query.filter_by(promoCode = promoCode, startDate = startDate).one_or_none()
@@ -613,7 +618,7 @@ def modify_promo_code():
 @jwt_required()
 @roles_required('Staff')
 def delete_promo_code():
-    promoCode = request.json.get('promoCode')
+    promoCode = request.json.get('promoCode').upper()
     startDate = datetime.strptime(request.json.get('startDate'), "%Y-%m-%d")
     
     with app.app_context():
@@ -630,7 +635,7 @@ def delete_promo_code():
 @roles_required('Student')
 def get_room_schedule():
     date = request.args.get('date')
-    room_name = request.args.get('roomName')
+    room_name = request.args.get('roomName').lower()
     user = get_jwt().get('sub')
     with app.app_context():
         room = Room.query.get(room_name)
@@ -641,7 +646,7 @@ def get_room_schedule():
 
 @app.route("/api/get_room_image")
 def get_room_image():
-    room_name = request.args.get("roomName")
+    room_name = request.args.get("roomName").lower()
     file_path = Room.query.get(room_name).imgUrl
     return send_file(file_path, mimetype='image/jpeg')
 
@@ -718,7 +723,7 @@ def view_bookings_admin():
     booking_sql_list = Booking.query.filter(Booking.startDateTime.between(startDateTime, endDateTime)).order_by(Booking.startDateTime.desc())
 
     for booking in booking_sql_list:
-        booking_list.append({"roomName": booking.roomName, "userId": booking.userId, "startTime": str(booking.startDateTime.replace(tzinfo=None)), "endTime": str(booking.endDateTime.replace(tzinfo=None)),  "bookingPrice": booking.bookingPrice})
+        booking_list.append({"roomName": booking.roomName.title(), "userId": booking.userId, "startTime": str(booking.startDateTime.replace(tzinfo=None)), "endTime": str(booking.endDateTime.replace(tzinfo=None)),  "bookingPrice": booking.bookingPrice})
     
     return {"bookings": booking_list}
 
@@ -739,10 +744,10 @@ def view_promo_codes():
 @jwt_required()
 @roles_required('Student')
 def view_promo_discount():
-    promoCode = request.args.get('promoCode')
+    promoCode = request.args.get('promoCode').upper()
     bookingStartDate = request.args.get('startDate')
 
-    bookingStartDate = datetime.strptime(bookingStartDate, '%Y-%m-%d %H')
+    bookingStartDate = datetime.strptime(bookingStartDate, '%Y-%m-%d')
 
     promocode_sql_obj = PromoCode.query.filter(and_(PromoCode.promoCode == promoCode, PromoCode.startDate <= bookingStartDate, PromoCode.endDate > bookingStartDate)).one_or_none()
 
@@ -750,3 +755,17 @@ def view_promo_discount():
         return {"success": False, "message": "Promo Code does not exist"}
 
     return {"success": True, "discount": promocode_sql_obj.discountPercentage}
+
+
+@app.route('/api/view_room_details', methods=['GET'])
+@jwt_required()
+@roles_required('Student')
+def get_room_details():
+    roomName = request.args.get('roomName').lower()
+
+    room_sql_obj = Room.query.filter(Room.name == roomName).one_or_none()
+
+    if room_sql_obj == None:
+        return {"success": False, "message": "Specified room does not exist"}
+    
+    return {"success": True, "room": {"name": room_sql_obj.name.title(), "url": room_sql_obj.imgUrl, "roomType": room_sql_obj.roomType.value, "price": room_sql_obj.price, "capacity": room_sql_obj.capacity, "description": room_sql_obj.description}}
