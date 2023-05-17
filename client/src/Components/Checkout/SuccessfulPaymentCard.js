@@ -3,7 +3,7 @@ import { Card } from "flowbite-react";
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { format, setHours } from "date-fns";
 
-export function SuccessfulPaymentCard() {
+export function SuccessfulPaymentCard(props) {
 
 
   const booking = {
@@ -54,14 +54,14 @@ export function SuccessfulPaymentCard() {
         </div>
         <div className="flex flex-col gap-0 font-bold text-center text-white text-xl ">
           <div>
-            <span>{booking.name} booked for </span>
+            <span>{props.booking.name} booked for </span>
           </div>
           <div>
-            <span>{dateSyntax(booking.startDateTime)} </span>
+            <span>{dateSyntax(props.booking.startDateTime)} </span>
           </div>
           <div>
             <span>
-              {format(setHours(new Date(), booking.startDateTime.getHours()), "h:00 aaa")} to {format(setHours(new Date(), booking.endDateTime.getHours()), "h:00 aaa")}
+              {format(setHours(new Date(), props.booking.startDateTime.getHours()), "h:00 aaa")} to {format(setHours(new Date(), props.booking.endDateTime.getHours()), "h:00 aaa")}
             </span>
            
           </div>
