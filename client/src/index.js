@@ -22,6 +22,7 @@ import AdminRoomPage from "./Pages/AdminRoomPage";
 import StudentSchedulePage from "./Pages/StudentSchedulePage";
 import StaffPromosPage from "./Pages/StaffPromosPage";
 import PaymentPage from "./Pages/PaymentPage";
+import SuccessfulPaymentPage from "./Pages/SuccessfulPaymentPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -90,7 +91,27 @@ root.render(
 						</PrivateRoute>
 					}
 				/>
-				
+
+				<Route
+					path="/payment"
+					element={
+						<div>
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<PaymentPage />
+						</div>
+					}
+				/>
+
+				<Route
+					path="/successPayment"
+					element={
+						<PrivateRoute requiredRole="Student">
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<SuccessfulPaymentPage />
+						</PrivateRoute>
+					}
+				/>
+
 				{/* Staff Page Route */}
 				<Route
 					exact
@@ -130,15 +151,6 @@ root.render(
 							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
 							<AdminRoomPage />
 						</PrivateRoute>
-					}
-				/>
-				<Route
-					path="/payment"
-					element={
-						<div>
-							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
-							<PaymentPage/>
-						</div>
 					}
 				/>
 				{/* Other routes */}

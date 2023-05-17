@@ -1,30 +1,15 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Card, Footer } from "flowbite-react";
 import { format, setHours } from "date-fns";
+import { AuthContext } from "../Authentication/AuthContext";
+import axios from "axios";
 
 export function BookingSummaryCard(props) {
-	const booking = {
-		name: "Backrooms",
-		desc: "A private meeting room located at SIM HQ Blk B",
-		startDateTime: new Date("April 20, 2023 09:00:00"),
-		endDateTime: new Date("April 20, 2023 12:00:00"),
-		capacity: 10,
-		pricePerHours: 5,
-	};
-
 	const moneySyntax = (money) => {
 		const formattedValue = `$${money.toFixed(2)}`;
 		return formattedValue;
 	};
 
-	const timeSyntax = (dateObject) => {
-		// this const is not used
-		let h = addZero(dateObject.getHours());
-		let m = addZero(dateObject.getMinutes());
-		let time = h + ":" + m;
-		return time;
-	};
-	console.log(props.booking);
 	const dateSyntax = (dateObject) => {
 		const daysOfWeek = [
 			"Sunday",
@@ -76,14 +61,14 @@ export function BookingSummaryCard(props) {
 					<div className="flex items-center justify-center mb-3">
 						<img
 							className="h-26"
-							src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Backrooms_model.jpg"
+							src={`http://127.0.0.1:5000/api/get_room_image?roomName=${props.booking.name}`}
 						></img>
 					</div>
 					<span className="font-bold text-2xl text-white text-center">
 						{props.booking.name}
 					</span>
 					<span className="text-gray text-xs text-zinc-400 font-bold text-center align-middle px-2">
-						{booking.desc}
+						{props.booking.description}
 					</span>
 				</div>
 				<div className="flex flex-col gap-1 font-bold border-t-2 border-white pt-4 ">
@@ -115,12 +100,12 @@ export function BookingSummaryCard(props) {
 					</div>
 					<div className="flex flex-row w-full justify-between">
 						<span className="text-white">Capacity </span>{" "}
-						<span className="text-zinc-400">{booking.capacity} pax</span>
+						<span className="text-zinc-400">{props.booking.capacity} pax</span>
 					</div>
 					<div className="flex flex-row w-full justify-between">
 						<span className="text-white">Pricing </span>{" "}
 						<span className="text-zinc-400">
-							{moneySyntax(booking.pricePerHours)} / hour
+							{moneySyntax(props.booking.pricePerHours)} / hour
 						</span>
 					</div>
 				</div>
