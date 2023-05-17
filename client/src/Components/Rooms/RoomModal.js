@@ -1,4 +1,4 @@
-import { Modal, Button, Select } from "flowbite-react";
+import { Modal, Button, Select, Label } from "flowbite-react";
 import React, { useState, useEffect, useContext } from "react";
 import DatePicker from "../Search/DatePicker";
 import { format, setHours } from "date-fns";
@@ -118,10 +118,8 @@ function RoomModal(props) {
 						</div>
 
 						<div className="mb-5">
-							<div className="flex items-center font-normal text-white text-md mb-3">
-								<div className="mr-5 w-36">
-									<p>Booking date:</p>
-								</div>
+							<div className="items-center font-normal text-white text-md mb-3">
+								<Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Booking date</Label>
 								<DatePicker
 									id="date"
 									data={data}
@@ -131,11 +129,9 @@ function RoomModal(props) {
 									className="w-full"
 								/>
 							</div>
-							<div className="flex items-center font-normal text-white text-md justify-between">
-								<div className="flex flex-row">
-									<div className="flex mr-5 items-center">
-										Start time:
-									</div>
+							<div className="flex items-center font-normal text-white text-md justify-between gap-5">
+								<div className="flex-1 w-1/2">
+									<Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start time</Label>
 									<Select
 										value={data.startTime}
 										id="startTime"
@@ -163,12 +159,11 @@ function RoomModal(props) {
 										;
 									</Select>
 								</div>
-								<div className="flex flex-row">
-									<div className="flex items-center mr-3">
-										<p>End time: </p>
-									</div>
+								<div className="flex-1 w-full">
+									<Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End time</Label>
 									<div className="flex items-center">
 										<Select
+											className="w-full"
 											value={data.endTime}
 											id="endTime"
 											required={true}
@@ -210,6 +205,7 @@ function RoomModal(props) {
 								}&date=${format(data.date, "yyyy-MM-dd")}
 								&startTime=${data.startTime}
 								&endTime=${data.endTime}`}
+								className="w-full"
 							>
 								<Button className="w-full">Book now</Button>
 							</Link>
