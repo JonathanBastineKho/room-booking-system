@@ -20,6 +20,7 @@ import AdminTransactionPage from "./Pages/AdminTransactionPage";
 import AdminRoomPage from "./Pages/AdminRoomPage";
 import StudentSchedulePage from "./Pages/StudentSchedulePage";
 import StaffPromosPage from "./Pages/StaffPromosPage";
+import PaymentPage from "./Pages/PaymentPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -118,6 +119,15 @@ root.render(
 							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
 							<AdminRoomPage />
 						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/payment"
+					element={
+						<div>
+							<NavigationBar className="dark border-b border-gray-700 py-1 bg-gray-800" />
+							<PaymentPage/>
+						</div>
 					}
 				/>
 				{/* Other routes */}
