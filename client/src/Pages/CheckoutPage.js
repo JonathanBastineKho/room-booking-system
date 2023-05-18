@@ -2,12 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import BookingSummaryCard from "../Components/Checkout/BookingSummaryCard";
 import PaymentSummaryCard from "../Components/Checkout/PaymentSummaryCard";
 import { Button, TextInput } from "flowbite-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { format, getHours, setHours } from "date-fns";
 import { AuthContext } from "../Components/Authentication/AuthContext";
 
 function CheckoutPage() {
+	const navigate = useNavigate();
 	const [promo, setPromo] = useState("");
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [discount, setDiscount] = useState({
@@ -79,7 +80,6 @@ function CheckoutPage() {
 							code: promo,
 							percentage: 0,
 						});
-						alert(`${promo} is invalid.`);
 					}
 				})
 				.catch((error) => {
@@ -94,8 +94,23 @@ function CheckoutPage() {
 
 	const total = (subtotal * (100 - discount.percentage)) / 100;
 
+	const validateCheckout = () => {
+		if (discount.code === "" || (discount.code !== "" && discount.percentage > 0)){
+			navigate(`/payment?roomName=${searchParams.get(
+				"roomName"
+			)}&date=${format(
+				new Date(searchParams.get("date")),
+				"yyyy-MM-dd"
+			)}
+				&startTime=${parseInt(searchParams.get("startTime")) + 9}
+				&endTime=${parseInt(searchParams.get("endTime")) + 10}
+				&subtotal=${subtotal}
+				&promocode=${discount.code}`);
+		}
+	}
+
 	return (
-		<div className="flex flex-row w-full m-20 mt-40 gap-x-10 items-center justify-center align-middle">
+		<div className="flex flex-row w-full mt-40 gap-x-10 items-center justify-center">
 			<BookingSummaryCard booking={booking} />
 			<div className="flex flex-col justify-start">
 				<div className="flex flex-col text-white font-bold text-2xl mb-5">
@@ -127,23 +142,10 @@ function CheckoutPage() {
 					total={total}
 					discount={discount.percentage}
 				/>
-
-				<Link
-					to={`/payment?roomName=${searchParams.get(
-						"roomName"
-					)}&date=${format(
-						new Date(searchParams.get("date")),
-						"yyyy-MM-dd"
-					)}
-						&startTime=${parseInt(searchParams.get("startTime")) + 9}
-						&endTime=${parseInt(searchParams.get("endTime")) + 10}
-						&subtotal=${subtotal}
-						&promocode=${discount.code}`}
-				>
-					<Button className="mt-10 p-5 mb-20 w-full">
-						<div className="text-4xl font-bold">Checkout</div>
+					<Button className="mt-4 mb-20 w-full"
+					onClick={validateCheckout}>
+						<div className="text-xl font-bold">Checkout</div>
 					</Button>
-				</Link>
 			</div>
 		</div>
 	);
