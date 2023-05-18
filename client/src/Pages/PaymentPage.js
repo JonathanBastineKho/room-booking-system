@@ -61,6 +61,7 @@ function PaymentPage() {
 						);
 					} else {
 						alert("Booking innapropriate");
+						navigate('/');
 					}
 				})
 				.catch((error) => {
