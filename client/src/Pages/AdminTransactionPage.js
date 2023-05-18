@@ -19,13 +19,16 @@ function AdminTransactionPage() {
         if(filter.startDate > filter.endDate){
             setFilter({startDate: filter.startDate, endDate: filter.startDate});
         }
-    }, [filter.startDate]);
+    }, [filter.startDate, filter.endDate]);
     const [roomSelection, setRoomSelection] = useState(["All rooms"]);
     const [selectedRoom, setSelectedRoom] = useState("All rooms");
     const display = selectedRoom === "All rooms" ? data : data.filter((item) => item.roomName === selectedRoom);
     useEffect(() => {
         const startDate = filter.startDate;
         const endDate = filter.endDate;
+        if (startDate === -1 || endDate === -1){
+            return
+        }
         axios.get(
             "/api/view_bookings_admin",
             {
@@ -75,7 +78,7 @@ function AdminTransactionPage() {
                             setData={setFilter}
                             update_key="startDate"
                             className="w-36"
-                            min_date={filter.startDate}
+                            min_date={sub(new Date(), {weeks: 1})}
                         />
                     </div>
                     <div>

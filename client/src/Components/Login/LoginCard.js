@@ -28,7 +28,7 @@ function LoginCard() {
             if (userType === "Student") {
                 navigate("/");
             } else if (userType === "Staff") {
-                navigate("/staff");
+                navigate("/staff/rooms");
             } else if (userType === "Administrator") {
                 navigate("/administrator");
             }

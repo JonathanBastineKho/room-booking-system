@@ -142,10 +142,11 @@ function UserCurrentTable(props) {
 							: "bg-white dark:border-gray-700 dark:bg-gray-800"
 					}
 				>
-					<Table.Cell colSpan={3} className="w-[36rem]">
-						No current bookings.
+					<Table.Cell colSpan={5} className="w-full">
+						<span className="text-lg font-semibold">
+                            No Current Bookings
+                        </span>
 					</Table.Cell>
-					<Table.Cell colSpan={2} className="w-[20rem]"></Table.Cell>
 				</Table.Row>
 			</Table.Body>
 		</Table>

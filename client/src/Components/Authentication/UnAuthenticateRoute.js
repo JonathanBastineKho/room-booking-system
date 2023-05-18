@@ -45,7 +45,7 @@ const UnAuthenticatedRoute = ({children}) => {
         if (user.user_type === "Student") {
             return (<Navigate to="/" />);
         } else if (user.user_type === "Staff"){
-            return (<Navigate to="/staff" />);
+            return (<Navigate to="/staff/rooms" />);
         } else if (user.user_type === "Administrator"){
             return (<Navigate to="/administrator" />);
         }

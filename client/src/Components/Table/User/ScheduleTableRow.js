@@ -16,7 +16,7 @@ function ScheduleTableRow(props) {
 		cells.push(
 			<td key={index}>
 				<div
-					className={`border-2 border-gray-400 w-20 h-12 bg-gray-500 ${
+					className={`border-2 border-gray-400 w-20 h-16 bg-gray-500 w-full ${
 						value === 0 &&
 						"bg-gray-800 hover:bg-gray-900 hover:border-gray-200"
 					} ${value === 2 && "border-green-400 bg-green-400"}
