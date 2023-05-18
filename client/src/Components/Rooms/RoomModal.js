@@ -30,8 +30,13 @@ function RoomModal(props) {
 		
     }, [data.date]);
 
+
 	useEffect(() => {
 		let early = getEarliestAvailable();
+        if (data.date.getDate() === new Date().getDate() && new Date().getHours() < 17){
+            let todayHour = new Date().getHours() - 9
+            early = todayHour + 1;
+        }
 		setData((prev) => ({...prev, startTime: early, endTime: early}));
 	}, [timeSlots]);
 
@@ -97,7 +102,7 @@ function RoomModal(props) {
             endSlots.push(0);
         }
     }
-
+    console.log(data.date.getDate() === new Date().getDate());
     return (
         <Modal
             show={props.show}
@@ -149,7 +154,7 @@ function RoomModal(props) {
                                     data={data}
                                     setData={setData}
                                     update_key="date"
-                                    min_date={new Date()}
+                                    min_date={new Date().getHours() > 17 ? new Date().setDate(new Date().getDate() + 1) : new Date()}
                                     className="w-full"
                                 />
                             </div>

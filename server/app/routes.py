@@ -134,6 +134,12 @@ def get_booking_slots(room_name, date, user):
             booking_slots[booking.startDateTime.hour-9:booking.endDateTime.hour-9] = [2] * time_diff
         else:
             booking_slots[booking.startDateTime.hour-9:booking.endDateTime.hour-9] = [1] * time_diff
+    today = datetime.now()
+    if today.date() == datetime.strptime(date, '%Y-%m-%d').date() and today.hour < 17:
+        today_hour = today.hour - 9
+        for i in range(today_hour + 1):
+            if booking_slots[i] == 0:
+                booking_slots[i] = 1
     return booking_slots
 
 
