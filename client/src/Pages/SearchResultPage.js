@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import HorizontalSearchCard from "../Components/Search/HorizontalSearchCard";
 import FilterSortAccordion from "../Components/Search/FilterSortAccordion";
@@ -12,6 +12,7 @@ export const DateContext = createContext();
 
 function SearchResultPage() {
 	const [searchParams] = useSearchParams();
+	const navigate = useNavigate()
 	const { token, logout } = useContext(AuthContext);
 	const [rooms, setRooms] = useState([]);
 	const dateTime = new Date(searchParams.get("dateTime"));
@@ -109,6 +110,14 @@ function SearchResultPage() {
 	// useEffect(() => {
 	// 	props.handleFilter(roomType, price, capacity, time);
 	// }, [roomType, price, capacity, time]);
+
+	useEffect(() => {
+		const date = searchParams.get("dateTime");
+		console.log(date);
+		if (new Date(date).getDate() === new Date().getDate() && new Date().getHours() > 17){
+			navigate(`/search?roomName=${searchParams.get("roomName")}&dateTime=${format(new Date().setDate(new Date().getDate() + 1), 'yyyy-MM-dd')}&cap_2=${searchParams.get("cap_2")}&cap_5=${searchParams.get("cap_5")}&cap_10=${searchParams.get("cap_10")}&cap_15=${searchParams.get("cap_15")}&cap_20=${searchParams.get("cap_20")}`);
+		}
+	}, [])
 
 	useEffect(() => {
 		searchRooms();

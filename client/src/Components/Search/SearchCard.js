@@ -15,7 +15,7 @@ import { format } from "date-fns";
 function SearchCard(props) {
 	const [filter, setFilter] = useState({
 		name: "",
-		date: new Date(),
+		date: new Date().getHours() > 17 ? new Date().setDate(new Date().getDate() + 1) : new Date(),
 		cap_2: true,
 		cap_5: true,
 		cap_10: true,
@@ -64,7 +64,7 @@ function SearchCard(props) {
 							data={filter}
 							setData={setFilter}
 							update_key="date"
-							min_date={new Date()}
+							min_date={new Date().getHours() > 17 ? new Date().setDate(new Date().getDate() + 1) : new Date()}
 							className="w-full"
 						/>
 					</div>

@@ -58,8 +58,9 @@ function StudentSchedulePage() {
                         data={date}
                         setData={setDate}
                         update_key="date"
-                        min_date={new Date()}
+                        min_date={new Date().getHours() > 17 ? new Date().setDate(new Date().getDate() + 1) : new Date()}
                         className="w-[15rem]"
+                        selected={new Date().getHours() > 17 ? new Date().setDate(new Date().getDate() + 1) : new Date()}
                     />
                     <TextInput
                         id="name"
