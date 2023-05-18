@@ -59,7 +59,7 @@ function DateButton(props) {
 export default function DatePicker(props) {
 	const [open, setOpen] = useState(false);
 	const [viewed, setViewed] = useState(startOfMonth(new Date()));
-	const selected = props.selected ? props.selected : props.data[props.update_key];
+	const selected = props.data[props.update_key];
 
 	const updateData = (key, value) => {
 		props.setData((prev) => ({

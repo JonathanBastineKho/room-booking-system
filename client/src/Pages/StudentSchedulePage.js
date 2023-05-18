@@ -10,7 +10,7 @@ import { TextInput } from "flowbite-react";
 import { AiOutlineSearch } from "react-icons/ai";
 
 function StudentSchedulePage() {
-    const [date, setDate] = useState({ date: new Date() });
+    const [date, setDate] = useState({ date: new Date().getHours() > 17 ? new Date(new Date().setDate(new Date().getDate() + 1)) : new Date() });
     const [search, setSearch] = useState("");
     const [schedule, setSchedule] = useState([]);
     const { token } = useContext(AuthContext);
@@ -48,7 +48,6 @@ function StudentSchedulePage() {
                 });
         }
     };
-    console.log(schedule);
 
     return (
             <div className="flex flex-col w-full justify-center items-center align-middle mt-12">
@@ -60,7 +59,6 @@ function StudentSchedulePage() {
                         update_key="date"
                         min_date={new Date().getHours() > 17 ? new Date().setDate(new Date().getDate() + 1) : new Date()}
                         className="w-[15rem]"
-                        selected={new Date().getHours() > 17 ? new Date().setDate(new Date().getDate() + 1) : new Date()}
                     />
                     <TextInput
                         id="name"
