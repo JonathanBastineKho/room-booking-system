@@ -64,7 +64,7 @@ function StaffModifyRoomForm(props) {
         x = 'PRIVATE_POD';
       }
       formData.append("newRoomName", data.name);
-      formData.append("roomType", data.type);
+      formData.append("roomType", x);
       formData.append("price", data.price);
       formData.append("capacity", data.capacity);
       formData.append("file", data.file);
