@@ -20,10 +20,10 @@ function StaffPromoTableRow(props) {
       },
       data: {
         promoCode: promoCode,
-        startDate: startDate.toISOString().slice(0, 10),
+        startDate: format(startDate, 'yyyy-MM-dd'),
       },
     };
-
+    console.log('deleted');
     axios
       .delete("/api/delete_promo_code", config)
       .then((res) => {
