@@ -40,6 +40,7 @@ function StaffModifyRoomForm(props) {
   };
   useEffect(() => {
     getRoomImage();
+    console.log(data);
   }, []);
 
   const handleUpdate = (key, value) => {
@@ -56,6 +57,12 @@ function StaffModifyRoomForm(props) {
       data.file
     ) {
       var formData = new FormData();
+      let x = 'LECTURE_HALL';
+      if (data.type === 'Meeting Room'){
+        x = 'MEETING_ROOM';
+      } else if (data.type === 'Private Pod'){
+        x = 'PRIVATE_POD';
+      }
       formData.append("newRoomName", data.name);
       formData.append("roomType", data.type);
       formData.append("price", data.price);
@@ -74,6 +81,7 @@ function StaffModifyRoomForm(props) {
             props.onClose();
             props.getRooms();
           } else {
+            console.log(res.data);
             alert("Failed to modify room.");
           }
         })
@@ -148,7 +156,7 @@ function StaffModifyRoomForm(props) {
               id="room_cap"
               required={true}
               onChange={(ev) => {
-                handleUpdate("capacity", ev.target.value);
+                handleUpdate("capacity", Number(ev.target.value));
               }}
               value={data.capacity}
             >
