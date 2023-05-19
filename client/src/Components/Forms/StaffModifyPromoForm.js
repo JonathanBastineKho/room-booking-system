@@ -42,16 +42,15 @@ function StaffModifyPromoForm(props) {
   };
   const handleModify = (event) => {
     if (data.promoCode && data.startDate && data.endDate && data.discount) {
+      console.log(typeof data.startDate);
       const jsonToSubmit = {
         promoCode: props.data.promoCode,
-        startDate: props.data.startDate.toISOString().slice(0, 10),
-        newstartDate: data.startDate.toISOString().slice(0, 10),
-        newendDate: data.endDate.toISOString().slice(0, 10),
+        startDate: format(props.data.startDate, 'yyyy-MM-dd'),
+        newstartDate: format(data.startDate, 'yyyy-MM-dd'),
+        newendDate: format(data.endDate, 'yyyy-MM-dd'),
         discountPercentage: data.discount,
         newPromoCode: data.promoCode,
       };
-      console.log("data", data)
-      console.log("json", jsonToSubmit)
       axios
         .patch("/api/modify_promo_code", jsonToSubmit, {
           headers: {
@@ -65,6 +64,7 @@ function StaffModifyPromoForm(props) {
             props.onClose();
             props.getPromos();
           } else {
+            console.log(res.data);
             alert("Failed to edit promo code.");
           }
         })
