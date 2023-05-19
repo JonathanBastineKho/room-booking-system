@@ -51,8 +51,8 @@ function StaffCreatePromoForm(props) {
     ) {
       var jsonToSubmit = {
         promoCode: data.code,
-        startDate: data.startDate.toISOString().slice(0, 10),
-        endDate: data.endDate.toISOString().slice(0, 10),
+        startDate: format(data.startDate, 'yyyy-MM-dd'),
+        endDate: format(data.endDate, 'yyyy-MM-dd'),
         discountPercentage: data.discount,
       };
       axios
