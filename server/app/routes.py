@@ -346,7 +346,7 @@ def create_booking():
     endDateTime = datetime.strptime(endDateTimeString, '%Y-%m-%d %H')
     duration = endDateTime.hour - startDateTime.hour
 
-    if startDateTime.hour < 9 or endDateTime.hour > 17:
+    if startDateTime.hour < 9 or endDateTime.hour > 18:
         return {"success": False, "message": "The time chosen is invalid"}
 
     # check promo code

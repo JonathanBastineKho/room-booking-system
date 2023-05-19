@@ -35,7 +35,9 @@ function RoomModal(props) {
 		let early = getEarliestAvailable();
         if (data.date.getDate() === new Date().getDate() && new Date().getHours() < 17){
             let todayHour = new Date().getHours() - 9
-            early = todayHour + 1;
+            if (todayHour + 1 > early){
+                early = todayHour + 1;
+            }
         }
 		setData((prev) => ({...prev, startTime: early, endTime: early}));
 	}, [timeSlots]);
