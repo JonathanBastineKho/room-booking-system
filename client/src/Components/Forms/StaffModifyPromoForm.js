@@ -41,6 +41,7 @@ function StaffModifyPromoForm(props) {
     setData((prev) => ({ ...prev, [key]: value }));
   };
   const handleModify = (event) => {
+    event.preventDefault();
     if (data.promoCode && data.startDate && data.endDate && data.discount) {
       console.log(typeof data.startDate);
       const jsonToSubmit = {
@@ -77,7 +78,7 @@ function StaffModifyPromoForm(props) {
   };
 
   return (
-    <form onSubmit={handleModify}>
+    <form>
       <div className="flex flex-col gap-4 w-full t-3 px-3">
         <div className="flex flex-row justify-between gap-x-2">
           <div className="flex flex-col w-1/2">
