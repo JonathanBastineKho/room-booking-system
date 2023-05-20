@@ -37,6 +37,15 @@ npm start
 ```
 
 
+## Authors
+
+- [@JonathanBastineKho](https://www.github.com/jonathanbastinekho)
+- [@edbertekaputera](https://www.github.com/edbertekaputera)
+- [@edkesuma](https://www.github.com/edkesuma)
+- [@tharvus](https://www.github.com/tharvus)
+- [@stefananeshka](https://www.github.com/stefananeshka)
+- [@jovanjoto](https://www.github.com/jovanjoto)
+
 
 ## Screenshots
 
